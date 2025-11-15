@@ -78,7 +78,7 @@ export class API {
         return data.message;
     }
 
-    static async createPost(content: string, fatherPostId?: number): Promise<string> {
+    static async createPost(content: string, fatherPostId?: number): Promise<any> {
         let formData = new FormData();
         formData.append('content', content);
         if (fatherPostId !== undefined) {
@@ -95,7 +95,7 @@ export class API {
         if (!response.ok) {
             throw new Error(data.message || 'Create post failed');
         }
-        return data.message;
+        return data;
     }
 
 
@@ -199,6 +199,24 @@ export class API {
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data.message || 'React to post failed');
+        }
+        return data.message;
+    }
+
+    static async uploadImage(imageFile: File, postId: number): Promise<string> {
+        let formData = new FormData();
+        formData.append('image', imageFile);
+        formData.append('post_id', postId.toString());
+
+        const response = await fetch(`${Config.API_BASE_URL}/upload_image.php`, {
+            method: 'POST',
+            credentials: "include",
+            body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Image upload failed');
         }
         return data.message;
     }

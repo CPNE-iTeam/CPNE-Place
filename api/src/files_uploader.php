@@ -22,11 +22,9 @@ class FileUploader
     {
         if (!in_array($file['type'], ALLOWED_IMAGE_TYPES)) {
             throw new Exception("Error: Invalid file type!");
-            exit();
         }
         if ($file['size'] > MAX_IMAGE_SIZE) {
             throw new Exception("Error: File size exceeds the maximum limit: " . (MAX_IMAGE_SIZE / (1024 * 1024)) . " MB");
-            exit();
         }
 
         $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -35,7 +33,6 @@ class FileUploader
 
         if (!move_uploaded_file($file['tmp_name'], $destination)) {
             throw new Exception("Error: " . $this->codeToMessage($file['error']));
-            exit();
         }
 
         // Compress and resize

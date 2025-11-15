@@ -15,7 +15,6 @@ class Database
         $this->conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
         if ($this->conn->connect_error) {
             throw new RuntimeException("Connection failed: " . $this->conn->connect_error);
-            exit();
         }
     }
 
@@ -24,7 +23,6 @@ class Database
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) {
             throw new RuntimeException("Prepare failed: " . $this->conn->error);
-            exit();
         }
         if (!empty($params)) {
             $stmt->bind_param(str_repeat('s', count($params)), ...$params);
@@ -41,7 +39,6 @@ class Database
         $stmt = $this->conn->prepare($sql);
         if (!$stmt) {
             throw new RuntimeException("Prepare failed: " . $this->conn->error);
-            exit();
         }
         if (!empty($params)) {
             $stmt->bind_param(str_repeat('s', count($params)), ...$params);
@@ -59,6 +56,11 @@ class Database
         $this->closeConnection();
     }
 
+    public function getLastInsertId(): int
+    {
+        return $this->conn->insert_id;
+    }
+
 
     public function create_user(User $user)
     {
@@ -66,7 +68,6 @@ class Database
         $passwordHash = $user->getPasswordHash();
         if ($username === null || $passwordHash === null) {
             throw new InvalidArgumentException("Username and password hash cannot be null.");
-            exit();
         }
         $sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
         return $this->query($sql, [$username, $passwordHash]);
@@ -82,11 +83,9 @@ class Database
             $result = $this->select($sql, [$username]);
         } else {
             throw new InvalidArgumentException("User must have either id or username set.");
-            exit();
         }
         if (count($result) === 0) {
             throw new RuntimeException("User not found.");
-            exit();
         }
 
         $row = $result[0];
@@ -105,7 +104,6 @@ class Database
 
         if ($content === null || $authorId === null || $createdAt === null) {
             throw new InvalidArgumentException("Post content, author ID, and creation date cannot be null.");
-            exit();
         }
 
         if ($post->getFatherPostId() !== null) {
@@ -124,7 +122,6 @@ class Database
         if ($getComments) {
             if ($fatherPostId === null) {
                 throw new InvalidArgumentException("Father post ID must be provided to get comments.");
-                exit();
             }
             $sql = "
                 SELECT
@@ -171,7 +168,6 @@ class Database
         foreach ($result as $row) {
             if ($row['username'] === null) {
                 throw new RuntimeException("Author not found for post " . intval($row['ID']));
-                exit();
             }
 
             $author = new User(
@@ -219,13 +215,11 @@ class Database
 
         if (count($result) === 0) {
             throw new RuntimeException("Post not found.");
-            exit();
         }
 
         $row = $result[0];
         if ($row['username'] === null) {
             throw new RuntimeException("Author not found for post " . intval($row['ID']));
-            exit();
         }
 
         $author = new User(
@@ -276,7 +270,6 @@ class Database
     {
         if ($reaction->getUserID() === null || $reaction->getPostID() === null || $reaction->getReactionType() === null) {
             throw new InvalidArgumentException("Reaction must have user ID, reaction type, and post ID set.");
-            exit();
         }
 
         $userId = strval($reaction->getUserID());

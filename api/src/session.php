@@ -25,7 +25,6 @@ class Session
     {
         if (!self::isLoggedIn()) {
             throw new Exception("No user is currently logged in.");
-            exit();
         }
 
         $userId = $_SESSION["account_id"];

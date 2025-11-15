@@ -15,7 +15,6 @@ class Reaction {
 
         if (!in_array($reaction_type, [1, -1])) {
             throw new InvalidArgumentException("Reaction type must be 1 (like) or -1 (dislike).");
-            exit();
         }
         $this->reaction_type = $reaction_type;
     }

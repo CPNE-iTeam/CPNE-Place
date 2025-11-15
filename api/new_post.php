@@ -38,7 +38,7 @@ $success = $db->create_post($post);
 
 if ($success) {
     http_response_code(201);
-    echo json_encode(["message" => "Post created successfully."]);
+    echo json_encode(["message" => "Post created successfully.", "post_id" => $db->getLastInsertId()]);
 } else {
     http_response_code(500);
     echo json_encode(["message" => "Failed to create post."]);

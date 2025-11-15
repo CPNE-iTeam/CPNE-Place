@@ -138,10 +138,20 @@ publishForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const content = (document.getElementById('postContent') as HTMLTextAreaElement).value;
+    const postMedias = (document.getElementById('postMedias') as HTMLInputElement).files;
 
     try {
-        const message = await API.createPost(content);
-        console.info(message);
+        const data = await API.createPost(content);
+        console.info(data);
+
+        if (postMedias) {
+            for (let i = 0; i < postMedias.length; i++) {
+                const file = postMedias[i];
+                const uploadMessage = await API.uploadImage(file, data.post_id);
+                console.info(uploadMessage);
+            }
+        }
+
         //alert(message);
         Popup.closePopup('publishPopup');
         (document.getElementById('postContent') as HTMLTextAreaElement).value = '';
