@@ -13,6 +13,7 @@ class User
 
         if ($username != null && $this->validateUsername($username) === false) {
             throw new InvalidArgumentException("Username must be between " . MIN_USERNAME_LENGTH . " and " . MAX_USERNAME_LENGTH . " characters and contain only letters, numbers, underscores, or hyphens.");
+            exit();
         }
         
         $this->username = $this->correctUsername($username);

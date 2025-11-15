@@ -1,0 +1,37 @@
+<?php
+include_once(dirname(__FILE__) . "/src/session.php");
+include_once(dirname(__FILE__) . "/src/database.php");
+include_once(dirname(__FILE__) . "/src/files_uploader.php");
+
+header('Content-Type: application/json');
+
+if (!Session::isLoggedIn()) {
+    http_response_code(401);
+    echo json_encode(["message" => "Unauthorized. Please log in."]);
+    exit();
+}
+
+if (!isset($_FILES['image'])) {
+    http_response_code(400);
+    echo json_encode(["message" => "No image file provided."]);
+    exit();
+}
+
+if (!isset($_POST['post_id'])) {
+    http_response_code(400);
+    echo json_encode(["message" => "No post ID provided."]);
+    exit();
+}
+
+$postid = intval($_POST['post_id']);
+$db = new Database();
+
+$user = Session::getCurrentUser();
+
+try {
+    $post = $db->get_post($postid);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["message" => "Database error: " . $e->getMessage()]);
+    exit();
+}

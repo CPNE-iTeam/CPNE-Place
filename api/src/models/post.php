@@ -16,6 +16,7 @@ class Post
 
         if ($content == null || $this->validateContent($content) === false) {
             throw new InvalidArgumentException("Content must be between " . MIN_POST_LENGTH . " and " . MAX_POST_LENGTH . " characters.");
+            exit();
         }
         $this->content = $this->correctContent($content);
         $this->author = $author;
