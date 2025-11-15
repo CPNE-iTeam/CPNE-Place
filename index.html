@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPNE Place</title>
+
+    <script type="module" src="/src/main.ts" defer></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>CPNE Place</h1>
+        <nav>
+            <ul>
+                <li><a id="signinButton">Se connecter</a></li>
+                <li><a id="signupButton">S'inscrire</a></li>
+                <li><a id="signoutButton">Se déconnecter</a></li>
+            </ul>
+            <button class="publish-button" id="publishButton">Publier</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="postsSection">
+            <!-- Posts will be dynamically loaded here -->
+        </section>
+
+        <!-- POPUPS -->
+        <!-- Sign In Popup -->
+        <div id="signinPopup" class="popup signin-popup popup-hide">
+            <div class="popup-content">
+                <button class="popup-close" id="closeSigninPopup">&times;</button>
+                <h2>Se connecter</h2>
+                <form id="signinForm">
+                    <label for="signinUsername">Nom d'utilisateur:</label>
+                    <input type="text" id="signinUsername" name="signinUsername" required autofocus>
+                    <label for="signinPassword">Mot de passe:</label>
+                    <input type="password" id="signinPassword" name="signinPassword" required>
+                    <button type="submit">Se connecter</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Sign Up Popup -->
+        <div id="signupPopup" class="popup signup-popup popup-hide">
+            <div class="popup-content">
+                <button class="popup-close" id="closeSignupPopup">&times;</button>
+                <h2>S'inscrire</h2>
+                <form id="signupForm">
+                    <label for="signupUsername">Nom d'utilisateur:</label>
+                    <input type="text" id="signupUsername" name="signupUsername" title="Le nom d’utilisateur doit contenir entre 3 et 25 caractères et ne peut inclure que des lettres minuscules (a–z), des chiffres (0–9), des underscores (_) ou des points (.)." required autofocus>
+                    <label for="signupPassword">Mot de passe:</label>
+                    <input autocomplete="new-password" minlength="8" type="password" id="signupPassword" name="signupPassword" required>
+                    <button type="submit">S'inscrire</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Publish Popup -->
+        <div id="publishPopup" class="popup publish-popup popup-hide">
+            <div class="popup-content">
+                <button class="popup-close" id="closePublishPopup">&times;</button>
+                <h2>Publier un post</h2>
+                <form id="publishForm">
+                    <label for="postContent">Contenu du post:</label>
+                    <textarea id="postContent" name="postContent" required></textarea>
+                    <button type="submit">Publier</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="commentsPopup" class="popup comments-popup popup-hide">
+            <input type="hidden" id="commentFatherPostId">
+            <div class="popup-content">
+                <button class="popup-close" id="closeCommentsPopup">&times;</button>
+                <h2>Commentaires</h2>
+                <div id="commentsSection">
+                    <!-- Comments will be dynamically loaded here -->
+                </div>
+                <form id="commentForm">
+                    <label for="commentContent">Ajouter un commentaire:</label>
+                    <textarea id="commentContent" name="commentContent" required></textarea>
+                    <button type="submit">Publier le commentaire</button>
+                </form>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer></footer>
+</body>
+
+</html>
