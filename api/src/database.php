@@ -134,6 +134,7 @@ class Database
                     posts.user_ID AS user_ID,
                     posts.father_post_id AS father_post_ID,
                     users.username AS username,
+                    users.is_certified AS is_certified,
                     users.password_hash AS password_hash,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
@@ -154,6 +155,7 @@ class Database
                     posts.user_ID AS user_ID,
                     users.username AS username,
                     users.password_hash AS password_hash,
+                    users.is_certified AS is_certified,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
                 FROM posts
@@ -176,7 +178,8 @@ class Database
             $author = new User(
                 intval($row['user_ID']),
                 $row['username'],
-                $row['password_hash']
+                $row['password_hash'],
+                boolval($row['is_certified'])
             );
 
             $images = $this->get_images(intval($row['ID']));
@@ -207,6 +210,7 @@ class Database
                 posts.user_ID AS user_ID,
                 posts.father_post_ID AS father_post_ID,
                 users.username AS username,
+                users.is_certified AS is_certified,
                 users.password_hash AS password_hash,
                 COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
                 COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
@@ -231,7 +235,8 @@ class Database
         $author = new User(
             intval($row['user_ID']),
             $row['username'],
-            $row['password_hash']
+            $row['password_hash'],
+            boolval($row['is_certified'])
         );
 
         $images = $this->get_images(intval($row['ID']));

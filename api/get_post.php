@@ -21,7 +21,8 @@ $result = [
     "content" => $post->getContent(),
     "author" => [
         "id" => $post->getAuthor()->getId(),
-        "username" => $post->getAuthor()->getUserName()
+        "username" => $post->getAuthor()->getUserName(),
+        "is_certified" => $post->getAuthor()->isCertified(),
     ],
     "created_at" => $post->getCreatedAt()->format(DateTime::ATOM),
     "likes_count" => $post->getLikesCount(),

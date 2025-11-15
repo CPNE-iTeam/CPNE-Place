@@ -115,7 +115,8 @@ export class API {
             postData.content,
             new User(
                 postData.author.id,
-                postData.author.username
+                postData.author.username,
+                postData.author.is_certified
             ),
             new Date(postData.created_at),
             undefined,
@@ -146,7 +147,8 @@ export class API {
             data.content,
             new User(
                 data.author.id,
-                data.author.username
+                data.author.username,
+                data.author.is_certified
             ),
             new Date(data.created_at),
             data.father_post_id,

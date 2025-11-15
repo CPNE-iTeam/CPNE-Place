@@ -6,8 +6,10 @@ class User
     private ?int $id;
     private string $username;
     private string $passwordHash;
+    private bool $isCertified;
+    private bool $isModerator;
 
-    public function __construct(?int $id, string $username, string $passwordHash)
+    public function __construct(?int $id, string $username, string $passwordHash, bool $isCertified = false, bool $isModerator = false)
     {
         $this->id = $id;
 
@@ -17,6 +19,8 @@ class User
         
         $this->username = $this->correctUsername($username);
         $this->passwordHash = $passwordHash;
+        $this->isCertified = $isCertified;
+        $this->isModerator = $isModerator;
     }
 
     private function correctUsername(string $username): string
@@ -44,5 +48,13 @@ class User
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
+    }
+    public function isCertified(): bool
+    {
+        return $this->isCertified;
+    }
+    public function isModerator(): bool
+    {
+        return $this->isModerator;
     }
 }

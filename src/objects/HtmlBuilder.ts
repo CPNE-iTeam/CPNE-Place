@@ -16,7 +16,7 @@ export class HtmlBuilder {
 
         const postAuthor = document.createElement('span');
         postAuthor.className = 'post-author';
-        postAuthor.textContent = `${post.Author.UserName}`;
+        postAuthor.textContent = `@${post.Author.UserName}` + (post.Author.isCertified ? " ✅" : "");
 
         const postDate = document.createElement('span');
         postDate.className = 'post-date';
