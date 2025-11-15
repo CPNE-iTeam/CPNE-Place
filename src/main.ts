@@ -103,6 +103,7 @@ signupForm.addEventListener('submit', async (event) => {
 
     try {
         const message = await API.registerUser(username, password);
+        console.info(message);
         //alert(message);
         Popup.closePopup('signupPopup');
     } catch (error) {
@@ -120,6 +121,7 @@ signinForm.addEventListener('submit', async (event) => {
 
     try {
         const message = await API.loginUser(username, password);
+        console.info(message);
         //alert(message);
         Popup.closePopup('signinPopup');
     } catch (error) {
@@ -139,6 +141,7 @@ publishForm.addEventListener('submit', async (event) => {
 
     try {
         const message = await API.createPost(content);
+        console.info(message);
         //alert(message);
         Popup.closePopup('publishPopup');
         (document.getElementById('postContent') as HTMLTextAreaElement).value = '';
@@ -159,6 +162,7 @@ commentForm.addEventListener('submit', async (event) => {
 
     try {
         const message = await API.createPost(content, fatherPostId);
+        console.info(message);
         //alert(message);
         //Popup.closePopup('commentPopup');
         (document.getElementById('commentContent') as HTMLTextAreaElement).value = '';

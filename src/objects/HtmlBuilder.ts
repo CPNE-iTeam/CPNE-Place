@@ -62,6 +62,7 @@ export class HtmlBuilder {
         likeElement.addEventListener('click', async () => {
             try {
                 const message = await API.reactToPost(post.Id, 1);
+                console.info(message);
             } catch (error) {
                 alert((error as Error).message);
             }
@@ -73,6 +74,7 @@ export class HtmlBuilder {
         dislikeElement.addEventListener('click', async () => {
             try {
                 const message = await API.reactToPost(post.Id, -1);
+                console.info(message);
             } catch (error) {
                 alert((error as Error).message);
             }
