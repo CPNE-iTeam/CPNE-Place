@@ -16,6 +16,14 @@ $user = new User(
 );
 
 $db = new Database();
+
+$sameNameUser = $db->get_user(username: $username);
+if ($sameNameUser !== null) {
+    http_response_code(409);
+    echo json_encode(["message" => "Username already taken."]);
+    exit;
+}
+
 $success = $db->create_user($user);
 
 if ($success) {

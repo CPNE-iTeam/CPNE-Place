@@ -76,7 +76,7 @@ class Database
         return $this->query($sql, [$username, $passwordHash]);
     }
 
-    public function get_user($userID = null, $username = null): User
+    public function get_user($userID = null, $username = null): ?User
     {
         if ($userID !== null) {
             $sql = "SELECT * FROM users WHERE id = ?";
@@ -88,7 +88,7 @@ class Database
             throw new InvalidArgumentException("User must have either id or username set.");
         }
         if (count($result) === 0) {
-            throw new RuntimeException("User not found.");
+            return null;
         }
 
         $row = $result[0];
