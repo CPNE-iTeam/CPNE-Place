@@ -9,8 +9,9 @@ class Post
     private ?int $father_post_id;
     private int $likes_count;
     private int $dislikes_count;
+    private array $images;
 
-    public function __construct(?int $id, string $content, User $author, DateTime $created_at, ?int $father_post_id, int $likes_count, int $dislikes_count)
+    public function __construct(?int $id, string $content, User $author, DateTime $created_at, ?int $father_post_id, int $likes_count, int $dislikes_count, array $images = [])
     {
         $this->id = $id;
 
@@ -23,6 +24,7 @@ class Post
         $this->father_post_id = $father_post_id;
         $this->likes_count = $likes_count;
         $this->dislikes_count = $dislikes_count;
+        $this->images = $images;
     }
 
 
@@ -67,5 +69,9 @@ class Post
     public function getDislikesCount(): int
     {
         return $this->dislikes_count;
+    }
+    public function getImages(): array
+    {
+        return $this->images;
     }
 }
