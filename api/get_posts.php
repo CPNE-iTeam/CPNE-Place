@@ -25,7 +25,8 @@ foreach ($posts as $post) {
         ],
         "created_at" => $post->getCreatedAt()->format(DateTime::ATOM),
         "likes_count" => $post->getLikesCount(),
-        "dislikes_count" => $post->getDislikesCount()
+        "dislikes_count" => $post->getDislikesCount(),
+        "images" => $post->getImages()
     ];
 }
 echo json_encode($results);

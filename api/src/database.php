@@ -6,6 +6,8 @@ include_once(dirname(__FILE__) . "/../env.php");
 include_once(dirname(__FILE__) . "/models/user.php");
 include_once(dirname(__FILE__) . "/models/post.php");
 include_once(dirname(__FILE__) . "/models/reaction.php");
+include_once(dirname(__FILE__) . "/../config.php");
+
 
 class Database
 {
@@ -177,6 +179,8 @@ class Database
                 $row['password_hash']
             );
 
+            $images = $this->get_images(intval($row['ID']));
+
             $post = new Post(
                 intval($row['ID']),
                 $row['content'],
@@ -184,7 +188,8 @@ class Database
                 new DateTime($row['created_at']),
                 $getComments ? intval($row['father_post_ID']) : null,
                 intval($row['likes_count']),
-                intval($row['dislikes_count'])
+                intval($row['dislikes_count']),
+                $images
             );
             $posts[] = $post;
         }
@@ -229,6 +234,8 @@ class Database
             $row['password_hash']
         );
 
+        $images = $this->get_images(intval($row['ID']));
+
         $post = new Post(
             intval($row['ID']),
             $row['content'],
@@ -236,13 +243,25 @@ class Database
             new DateTime($row['created_at']),
             $row['father_post_ID'] !== null ? intval($row['father_post_ID']) : null,
             intval($row['likes_count']),
-            intval($row['dislikes_count'])
+            intval($row['dislikes_count']),
+            $images
         );
 
         return $post;
     }
 
 
+
+    public function get_images(int $postID): array
+    {
+        $sql = "SELECT filename FROM images WHERE post_ID = ?";
+        $result = $this->select($sql, [strval($postID)]);
+        $images = [];
+        foreach ($result as $row) {
+            $images[] = rtrim(UPLOAD_DIR, '/') . '/' . $row['filename'];
+        }
+        return $images;
+    }
 
 
     // public function get_comments(int $fatherPostId): array
