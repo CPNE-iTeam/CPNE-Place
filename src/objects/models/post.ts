@@ -8,8 +8,9 @@ export class Post {
     private fatherPostId?: number;
     private likesCount: number;
     private dislikesCount: number;
+    private images: string[];
 
-    constructor(id: number, content: string, author: User, createdAt: Date, fatherPostId?: number, likesCount: number = 0, dislikesCount: number = 0) {
+    constructor(id: number, content: string, author: User, createdAt: Date, fatherPostId?: number, likesCount: number = 0, dislikesCount: number = 0, images: string[] = []) {
         this.id = id;
         this.content = content;
         this.author = author;
@@ -17,6 +18,7 @@ export class Post {
         this.fatherPostId = fatherPostId;
         this.likesCount = likesCount;
         this.dislikesCount = dislikesCount;
+        this.images = images;
     }
 
     get Id(): number {
@@ -45,5 +47,9 @@ export class Post {
 
     get DislikesCount(): number {
         return this.dislikesCount;
+    }
+
+    get Images(): string[] {
+        return this.images;
     }
 }

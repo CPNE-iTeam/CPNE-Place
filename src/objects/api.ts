@@ -120,7 +120,8 @@ export class API {
             new Date(postData.created_at),
             undefined,
             postData.likes_count,
-            postData.dislikes_count
+            postData.dislikes_count,
+            postData.images
         ));
     }
 
@@ -150,7 +151,8 @@ export class API {
             new Date(data.created_at),
             data.father_post_id,
             data.likes_count,
-            data.dislikes_count
+            data.dislikes_count,
+            data.images
         );
     }
 

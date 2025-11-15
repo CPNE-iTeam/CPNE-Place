@@ -155,6 +155,8 @@ publishForm.addEventListener('submit', async (event) => {
         //alert(message);
         Popup.closePopup('publishPopup');
         (document.getElementById('postContent') as HTMLTextAreaElement).value = '';
+        (document.getElementById('postMedias') as HTMLInputElement).value = '';
+
     } catch (error) {
         alert((error as Error).message);
     }

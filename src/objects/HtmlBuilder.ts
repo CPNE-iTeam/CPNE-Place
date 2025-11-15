@@ -1,5 +1,7 @@
 import { loadComments } from '../main';
 import { API } from './api';
+import { Config } from './config';
+import { GlobalConfig } from './models/global_config';
 import { Post } from './models/post';
 import { Popup } from './popup';
 
@@ -24,6 +26,16 @@ export class HtmlBuilder {
         headerElement.appendChild(postAuthor);
         headerElement.appendChild(postDate);
         postElement.appendChild(headerElement);
+
+        const imagesContainer = document.createElement('div');
+        imagesContainer.className = 'post-images-container';
+        for (const imageUrl of post.Images) {
+            const imgElement = document.createElement('img');
+            imgElement.src = `${Config.API_BASE_URL}/../${imageUrl}`;
+            imgElement.className = 'post-image';
+            imagesContainer.appendChild(imgElement);
+        }
+        postElement.appendChild(imagesContainer);
 
         const contentElement = document.createElement('p');
         contentElement.textContent = post.Content;
