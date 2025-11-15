@@ -37,6 +37,6 @@ class Session
 
     public static function isLoggedIn(): bool
     {
-        return isset($_SESSION["account_loggedin"]);
+        return isset($_SESSION["account_loggedin"]) && $_SESSION["account_loggedin"] === true && isset($_SESSION["account_id"]);
     }
 }
