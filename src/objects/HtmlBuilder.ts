@@ -1,7 +1,6 @@
 import { loadComments } from '../main';
 import { API } from './api';
 import { Config } from './config';
-import { GlobalConfig } from './models/global_config';
 import { Post } from './models/post';
 import { Popup } from './popup';
 
