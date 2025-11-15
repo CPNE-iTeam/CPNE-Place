@@ -53,9 +53,12 @@
                 <h2>S'inscrire</h2>
                 <form id="signupForm">
                     <label for="signupUsername">Nom d'utilisateur:</label>
-                    <input type="text" id="signupUsername" name="signupUsername" title="Le nom d’utilisateur doit contenir entre 3 et 25 caractères et ne peut inclure que des lettres minuscules (a–z), des chiffres (0–9), des underscores (_) ou des points (.)." required autofocus>
+                    <input type="text" id="signupUsername" name="signupUsername"
+                        title="Le nom d’utilisateur doit contenir entre 3 et 25 caractères et ne peut inclure que des lettres minuscules (a–z), des chiffres (0–9), des underscores (_) ou des points (.)."
+                        required autofocus>
                     <label for="signupPassword">Mot de passe:</label>
-                    <input autocomplete="new-password" minlength="8" type="password" id="signupPassword" name="signupPassword" required>
+                    <input autocomplete="new-password" minlength="8" type="password" id="signupPassword"
+                        name="signupPassword" required>
                     <button type="submit">S'inscrire</button>
                 </form>
             </div>
@@ -70,11 +73,13 @@
                 <form id="publishForm">
                     <label for="postContent">Contenu du post:</label>
                     <textarea id="postContent" name="postContent" required></textarea>
+                    <input id="postMedias" type="file" name="postMedias" accept="image/*" />
                     <button type="submit">Publier</button>
                 </form>
             </div>
         </div>
 
+        <!-- Comments Popup -->
         <div id="commentsPopup" class="popup comments-popup popup-hide">
             <input type="hidden" id="commentFatherPostId">
             <div class="popup-content">
@@ -89,7 +94,7 @@
                     <button type="submit">Publier le commentaire</button>
                 </form>
             </div>
-            
+
         </div>
     </main>
 
