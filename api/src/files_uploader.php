@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 include_once(dirname(__FILE__) . "/../config.php");
 
 
@@ -12,7 +8,7 @@ class FileUploader
 
     public function __construct($uploadDir = UPLOAD_DIR)
     {
-        $this->uploadDir = rtrim($uploadDir, '/') . '/';
+        $this->uploadDir = dirname(__FILE__) . "/../../" . rtrim($uploadDir, '/') . '/';
         if (!is_dir($this->uploadDir)) {
             mkdir($this->uploadDir, 0755, true);
         }

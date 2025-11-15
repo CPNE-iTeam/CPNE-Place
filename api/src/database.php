@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 include_once(dirname(__FILE__) . "/../env.php");
 include_once(dirname(__FILE__) . "/models/user.php");
+include_once(dirname(__FILE__) . "/models/post.php");
 include_once(dirname(__FILE__) . "/models/reaction.php");
 
 class Database

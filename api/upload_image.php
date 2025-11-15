@@ -36,7 +36,7 @@ try {
     exit();
 }
 
-if ($post['author_id'] !== $user['id']) {
+if ($post->getAuthor()->getId() !== $user->getId()) {
     http_response_code(403);
     echo json_encode(["message" => "Forbidden. You do not have permission."]);
     exit();
