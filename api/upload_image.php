@@ -35,3 +35,25 @@ try {
     echo json_encode(["message" => "Database error: " . $e->getMessage()]);
     exit();
 }
+
+if ($post['author_id'] !== $user['id']) {
+    http_response_code(403);
+    echo json_encode(["message" => "Forbidden. You do not have permission."]);
+    exit();
+}
+
+$uploader = new FileUploader();
+
+try {
+    $path = $uploader->uploadImage($_FILES['image']);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(["message" => "File upload error: " . $e->getMessage()]);
+    exit();
+}
+
+$db = new Database();
+$db->new_image_upload($postid, basename($path));
+
+http_response_code(200);
+echo json_encode(["message" => "Image uploaded successfully.", "path" => $path]);

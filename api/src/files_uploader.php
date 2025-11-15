@@ -46,7 +46,7 @@ class FileUploader
         // Clean up
         unlink($destination);
 
-        return $compressedFileName;
+        return $compressedDestination;
     }
 
 

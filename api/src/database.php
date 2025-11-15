@@ -304,4 +304,10 @@ class Database
             return $this->query($sql, [$userId, $postId, $newType]);
         }
     }
+
+    public function new_image_upload(int $postID, string $filename): bool
+    {
+        $sql = "INSERT INTO images (post_ID, filename) VALUES (?, ?)";
+        return $this->query($sql, [strval($postID), $filename]);
+    }
 }
