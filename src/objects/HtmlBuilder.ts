@@ -18,6 +18,32 @@ export class HtmlBuilder {
         postAuthor.className = 'post-author';
         postAuthor.textContent = `@${post.Author.UserName}` + (post.Author.isCertified ? " ✅" : "");
 
+        let authorClickCounter = 0;
+        postAuthor.addEventListener('click', () => {
+            console.log(`Clicked on author @${post.Author.UserName} ${authorClickCounter + 1} times`);
+            authorClickCounter++;
+            if (authorClickCounter >= 6) {
+                // Ban user
+                const duration = prompt(`Pour combien de jours voulez-vous bannir @${post.Author.UserName} ? (Entrez 0 pour annuler)`, "5");
+                if (duration !== null) {
+                    const days = parseInt(duration);
+                    if (isNaN(days) || days <= 0) {
+                        return;
+                    }
+
+                    const reason = prompt(`Quelle est la raison du bannissement de @${post.Author.UserName} ?`, "Comportement inapproprié") ?? "";
+
+                    const endDate = Math.floor(Date.now() / 1000) + days * 24 * 60 * 60;
+                    API.banUser(post.Author.UserId, endDate, reason).then(message => {
+                        alert(message);
+                    }).catch(error => {
+                        alert(error.message);
+                    });
+                }
+                authorClickCounter = 0;
+            }
+        });
+
         const postDate = document.createElement('span');
         postDate.className = 'post-date';
         postDate.textContent = post.CreatedAt.toLocaleString();

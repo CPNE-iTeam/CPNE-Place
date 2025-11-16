@@ -348,18 +348,18 @@ class Database
         return $r;
     }
 
-    public function new_banned_user(int $userID, int $banUntil, string $reason, int $moderatorID): bool
+    public function new_banned_user(int $userID, DateTime $banUntil, string $reason, int $moderatorID): bool
     {
-        $sql = "UPDATE banned_users SET user_ID = ?, end_date = ?, reason = ?, moderator_ID = ?";
-        return $this->query($sql, [strval($userID), strval($banUntil), htmlspecialchars($reason), strval($moderatorID)]);
+        $sql = "INSERT INTO banned_users (user_ID, end_date, reason, moderator_ID) VALUES (?, ?, ?, ?)";
+        return $this->query($sql, [strval($userID), $banUntil->format('Y-m-d H:i:s'), htmlspecialchars($reason), strval($moderatorID)]);
     }
 
     public function get_user_bann(int $userID): array
     {
-        $currentTime = time();
+        $currentTime = new DateTime();
 
         $sql = "DELETE FROM banned_users WHERE end_date <= ?";
-        $this->query($sql, [strval($currentTime)]);
+        $this->query($sql, [$currentTime->format('Y-m-d H:i:s')]);
 
         $sql = "SELECT * FROM banned_users WHERE user_ID = ?";
         $result = $this->select($sql, [strval($userID)]);

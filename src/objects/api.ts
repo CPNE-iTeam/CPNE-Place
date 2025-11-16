@@ -38,7 +38,7 @@ export class API {
         return data.message;
     }
 
-    static async loginUser(username: string, password: string): Promise<string> {
+    static async loginUser(username: string, password: string): Promise<any> {
         let formData = new FormData();
         formData.append('username', username);
         formData.append('password', password);
@@ -53,7 +53,7 @@ export class API {
         if (!response.ok) {
             throw new Error(data.message || 'Login failed');
         }
-        return data.message;
+        return data;
     }
 
     static async isLoggedIn(): Promise<boolean> {
@@ -241,6 +241,25 @@ export class API {
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data.message || 'Delete post failed');
+        }
+        return data.message;
+    }
+
+    static async banUser(userId: number, endDate: number, reason: string): Promise<string> {
+        let formData = new FormData();
+        formData.append('user_id', userId.toString());
+        formData.append('end_date', endDate.toString());
+        formData.append('reason', reason);
+
+        const response = await fetch(`${Config.API_BASE_URL}/bann_user.php`, {
+            method: 'POST',
+            credentials: "include",
+            body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Ban user failed');
         }
         return data.message;
     }

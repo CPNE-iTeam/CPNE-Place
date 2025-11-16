@@ -55,6 +55,11 @@ export async function loadComments(fatherPostId: number) {
     console.log(commentFatherPostId.value)
 }
 
+function loadBannData(reason: string, endDate: string) {
+    (document.getElementById('banReason') as HTMLSpanElement).textContent = reason;
+    (document.getElementById('banEndDate') as HTMLSpanElement).textContent = new Date(parseInt(endDate)*1000).toLocaleString();
+}
+
 const backendConfig: GlobalConfig = await API.getConfig();
 
 
@@ -122,11 +127,22 @@ signinForm.addEventListener('submit', async (event) => {
     const password = (document.getElementById('signinPassword') as HTMLInputElement).value;
 
     try {
-        const message = await API.loginUser(username, password);
-        console.info(message);
+        const data = await API.loginUser(username, password);
+
+        if (data.is_banned) {
+            console.log(data.message)
+
+            loadBannData(data.ban_reason, data.ban_end_date);
+            Popup.openPopup('bannedPopup');
+        } else {
+            alert(data.message);
+        }
+
+        console.info(data.message);
         //alert(message);
         Popup.closePopup('signinPopup');
     } catch (error) {
+
         alert((error as Error).message);
     }
 

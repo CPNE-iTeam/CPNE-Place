@@ -28,9 +28,10 @@ if ($user == null) {
 }
 
 $bannedUser = $db->get_user_bann($user->getID());
-if (!empty($bannedUser)) {
-    http_response_code(403);
-    echo json_encode(["message" => "You are banned until " . date('Y-m-d H:i:s', intval($bannedUser[0]['end_date'])) . ". Reason: " . $bannedUser[0]['reason']]);
+
+if (count($bannedUser) > 0) {
+    http_response_code(200);
+    echo json_encode(["message" => "You are banned until " . date('Y-m-d H:i:s', strtotime($bannedUser[0]['end_date'])) . ". Reason: " . $bannedUser[0]['reason'], "is_banned" => true, "ban_end_date" => strtotime($bannedUser[0]['end_date']), "ban_reason" => $bannedUser[0]['reason']]);
     exit();
 }
 
