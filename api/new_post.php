@@ -39,20 +39,6 @@ $post = new Post(
 
 $db = new Database();
 
-$userPosts = $db->get_user_posts($author);
-if (count($userPosts) > 0) {
-    $lastPost = $userPosts[0];
-    $lastPostTime = $lastPost->getCreatedAt();
-    $timeDiff = $createdAt->getTimestamp() - $lastPostTime->getTimestamp();
-
-    if ($timeDiff < POSTS_TIME_LIMIT_SECONDS) {
-        http_response_code(429);
-        echo json_encode(["message" => "You are posting too quickly. Please wait before creating another post."]);
-        exit();
-    }
-}
-
-
 $success = $db->create_post($post);
 
 if ($success) {
