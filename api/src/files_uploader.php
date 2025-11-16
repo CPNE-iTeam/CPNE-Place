@@ -80,6 +80,13 @@ class FileUploader
         imagedestroy($sourceImage);
     }
 
+    public function deleteFile($filePath)
+    {
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+    }
+
 
     private function codeToMessage($code)
     {

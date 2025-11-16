@@ -334,7 +334,17 @@ class Database
 
     public function delete_post(int $postID): bool
     {
+        
+        $sql = "DELETE FROM reactions WHERE post_ID = ?";
+        $r = $this->query($sql, [strval($postID)]);
+
+
+        $sql = "DELETE FROM images WHERE post_ID = ?";
+        $r =$this->query($sql, [strval($postID)]) && $r;
+
         $sql = "DELETE FROM posts WHERE ID = ?";
-        return $this->query($sql, [strval($postID)]);
+        $r = $this->query($sql, [strval($postID)]) && $r;
+
+        return $r;
     }
 }
