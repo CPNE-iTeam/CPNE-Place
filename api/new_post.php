@@ -15,6 +15,8 @@ if (!Session::isLoggedIn()) {
     exit();
 }
 
+const POSTS_TIME_LIMIT_SECONDS = 5;
+
 
 $content = $_POST['content'];
 $father_post_id = isset($_POST['father_post_id']) ? intval($_POST['father_post_id']) : null;
@@ -22,6 +24,8 @@ $father_post_id = isset($_POST['father_post_id']) ? intval($_POST['father_post_i
 $author = Session::getCurrentUser();
 
 $createdAt = new DateTime();
+
+
 
 $post = new Post(
     null,
@@ -34,6 +38,21 @@ $post = new Post(
 );
 
 $db = new Database();
+
+$userPosts = $db->get_user_posts($author);
+if (count($userPosts) > 0) {
+    $lastPost = $userPosts[0];
+    $lastPostTime = $lastPost->getCreatedAt();
+    $timeDiff = $createdAt->getTimestamp() - $lastPostTime->getTimestamp();
+
+    if ($timeDiff < POSTS_TIME_LIMIT_SECONDS) {
+        http_response_code(429);
+        echo json_encode(["message" => "You are posting too quickly. Please wait before creating another post."]);
+        exit();
+    }
+}
+
+
 $success = $db->create_post($post);
 
 if ($success) {

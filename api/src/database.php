@@ -257,6 +257,50 @@ class Database
         return $post;
     }
 
+    public function get_user_posts(User $user): array
+    {
+        $sql = "
+                    SELECT
+                posts.ID AS ID,
+                posts.content AS content,
+                posts.created_at AS created_at,
+                posts.user_ID AS user_ID,
+                posts.father_post_ID AS father_post_ID,
+                users.username AS username,
+                users.is_certified AS is_certified,
+                users.password_hash AS password_hash,
+                COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
+                COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
+            FROM posts
+            LEFT JOIN users ON users.ID = posts.user_ID
+            LEFT JOIN reactions ON reactions.post_ID = posts.ID
+            WHERE posts.user_ID = ?
+            GROUP BY posts.ID, posts.content, posts.created_at, posts.user_ID, users.username, users.password_hash
+            ORDER BY posts.created_at DESC
+        ";
+
+
+        $result = $this->select($sql, [strval($user->getID())]);
+        $posts = [];
+        foreach ($result as $row) {
+            $author = $this->get_user(intval($row['user_ID']));
+            if ($author === null) {
+                throw new RuntimeException("Author not found for post " . intval($row['ID']));
+            }
+            $post = new Post(
+                intval($row['ID']),
+                $row['content'],
+                $author,
+                new DateTime($row['created_at']),
+                $row['father_post_ID'] !== null ? intval($row['father_post_ID']) : null,
+                intval($row['likes_count']),
+                intval($row['dislikes_count']),
+                $this->get_images(intval($row['ID']))
+            );
+            $posts[] = $post;
+        }
+        return $posts;
+    }
 
 
     public function get_images(int $postID): array

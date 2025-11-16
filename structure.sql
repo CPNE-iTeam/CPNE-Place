@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 15, 2025 at 09:41 PM
+-- Generation Time: Nov 16, 2025 at 07:39 PM
 -- Server version: 9.3.0
 -- PHP Version: 8.4.14
 
@@ -20,6 +20,20 @@ SET time_zone = "+00:00";
 --
 -- Database: `cpneplace`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `banned_users`
+--
+
+CREATE TABLE `banned_users` (
+  `ID` int NOT NULL,
+  `user_ID` int NOT NULL,
+  `end_date` datetime NOT NULL,
+  `reason` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `moderator_ID` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -43,7 +57,7 @@ CREATE TABLE `posts` (
   `ID` int NOT NULL,
   `content` varchar(10000) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_ID` int NOT NULL,
-  `created_at` date NOT NULL,
+  `created_at` datetime NOT NULL,
   `father_post_ID` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -69,12 +83,20 @@ CREATE TABLE `reactions` (
 CREATE TABLE `users` (
   `ID` int NOT NULL,
   `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password_hash` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL
+  `password_hash` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_certified` tinyint(1) NOT NULL,
+  `is_moderator` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `banned_users`
+--
+ALTER TABLE `banned_users`
+  ADD PRIMARY KEY (`ID`);
 
 --
 -- Indexes for table `images`
@@ -105,28 +127,34 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `banned_users`
+--
+ALTER TABLE `banned_users`
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `images`
 --
 ALTER TABLE `images`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reactions`
 --
 ALTER TABLE `reactions`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID` int NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
