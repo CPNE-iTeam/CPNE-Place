@@ -334,13 +334,13 @@ class Database
 
     public function delete_post(int $postID): bool
     {
-        
+
         $sql = "DELETE FROM reactions WHERE post_ID = ?";
         $r = $this->query($sql, [strval($postID)]);
 
 
         $sql = "DELETE FROM images WHERE post_ID = ?";
-        $r =$this->query($sql, [strval($postID)]) && $r;
+        $r = $this->query($sql, [strval($postID)]) && $r;
 
         $sql = "DELETE FROM posts WHERE ID = ?";
         $r = $this->query($sql, [strval($postID)]) && $r;
@@ -352,5 +352,18 @@ class Database
     {
         $sql = "UPDATE banned_users SET user_ID = ?, end_date = ?, reason = ?, moderator_ID = ?";
         return $this->query($sql, [strval($userID), strval($banUntil), htmlspecialchars($reason), strval($moderatorID)]);
+    }
+
+    public function get_user_bann(int $userID): array
+    {
+        $currentTime = time();
+
+        $sql = "DELETE FROM banned_users WHERE end_date <= ?";
+        $this->query($sql, [strval($currentTime)]);
+
+        $sql = "SELECT * FROM banned_users WHERE user_ID = ?";
+        $result = $this->select($sql, [strval($userID)]);
+
+        return $result;
     }
 }

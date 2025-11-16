@@ -30,12 +30,21 @@ class Session
         $userId = $_SESSION["account_id"];
         $db = new Database();
         $user = $db->get_user($userId);
-        
+
         return $user;
     }
 
     public static function isLoggedIn(): bool
     {
+        if (isset($_SESSION["account_id"])) {
+            $db = new Database();
+            $user = $db->get_user($_SESSION["account_id"]);
+            $bannedUser = $db->get_user_bann($user->getID());
+            if (!empty($bannedUser)) {
+                self::logout();
+                return false;
+            }
+        }
         return isset($_SESSION["account_loggedin"]) && $_SESSION["account_loggedin"] === true && isset($_SESSION["account_id"]);
     }
 }

@@ -27,6 +27,13 @@ if ($user == null) {
     exit();
 }
 
+$bannedUser = $db->get_user_bann($user->getID());
+if (!empty($bannedUser)) {
+    http_response_code(403);
+    echo json_encode(["message" => "You are banned until " . date('Y-m-d H:i:s', intval($bannedUser[0]['end_date'])) . ". Reason: " . $bannedUser[0]['reason']]);
+    exit();
+}
+
 if (Crypto::verifyPassword($password, $user->getPasswordHash())) {
     Session::login($user);
 
