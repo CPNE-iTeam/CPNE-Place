@@ -347,4 +347,10 @@ class Database
 
         return $r;
     }
+
+    public function new_banned_user(int $userID, int $banUntil, string $reason, int $moderatorID): bool
+    {
+        $sql = "UPDATE banned_users SET user_ID = ?, end_date = ?, reason = ?, moderator_ID = ?";
+        return $this->query($sql, [strval($userID), strval($banUntil), htmlspecialchars($reason), strval($moderatorID)]);
+    }
 }
