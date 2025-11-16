@@ -173,12 +173,24 @@ publishForm.addEventListener('submit', async (event) => {
 commentForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
+    const commentMedias = (document.getElementById('commentMedias') as HTMLInputElement).files;
     const content = (document.getElementById('commentContent') as HTMLTextAreaElement).value;
     const fatherPostId = parseInt(commentFatherPostId.value);
 
+
     try {
-        const message = await API.createPost(content, fatherPostId);
-        console.info(message);
+        const data = await API.createPost(content, fatherPostId);
+        console.info(data);
+
+
+        if (commentMedias) {
+            for (let i = 0; i < commentMedias.length; i++) {
+                const file = commentMedias[i];
+                const uploadMessage = await API.uploadImage(file, data.post_id);
+                console.info(uploadMessage);
+            }
+        }
+
         //alert(message);
         //Popup.closePopup('commentPopup');
         (document.getElementById('commentContent') as HTMLTextAreaElement).value = '';
