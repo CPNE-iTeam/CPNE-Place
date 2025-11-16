@@ -31,7 +31,7 @@ class Session
         $db = new Database();
         $user = $db->get_user($userId);
         
-        return new User($userId, $user->getUsername(), $user->getPasswordHash());
+        return $user;
     }
 
     public static function isLoggedIn(): bool

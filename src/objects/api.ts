@@ -185,7 +185,9 @@ export class API {
             new Date(postData.created_at),
             fatherPostId,
             postData.likes_count,
-            postData.dislikes_count
+            postData.dislikes_count,
+            postData.images,
+            postData.can_edit
         ));
     }
 
