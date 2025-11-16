@@ -145,7 +145,7 @@ class Database
                 LEFT JOIN reactions ON reactions.post_ID = posts.ID
                 WHERE posts.father_post_id = ?
                 GROUP BY posts.ID, posts.content, posts.created_at, posts.user_ID, users.username, users.password_hash
-                ORDER BY posts.created_at ASC
+                ORDER BY posts.created_at DESC
             ";
             $result = $this->select($sql, [strval($fatherPostId)]);
         } else {
@@ -165,7 +165,7 @@ class Database
                 LEFT JOIN reactions ON reactions.post_ID = posts.ID
                 WHERE posts.father_post_id IS NULL
                 GROUP BY posts.ID, posts.content, posts.created_at, posts.user_ID, users.username, users.password_hash
-                ORDER BY posts.created_at ASC
+                ORDER BY posts.created_at DESC
             ";
             $result = $this->select($sql);
         }
