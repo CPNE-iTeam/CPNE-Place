@@ -96,6 +96,8 @@ class Database
             intval($row['ID']),
             $row['username'],
             $row['password_hash'],
+            boolval($row['is_certified']),
+            boolval($row['is_moderator']),
         );
     }
 
@@ -327,5 +329,12 @@ class Database
     {
         $sql = "INSERT INTO images (post_ID, filename) VALUES (?, ?)";
         return $this->query($sql, [strval($postID), $filename]);
+    }
+
+
+    public function delete_post(int $postID): bool
+    {
+        $sql = "DELETE FROM posts WHERE ID = ?";
+        return $this->query($sql, [strval($postID)]);
     }
 }

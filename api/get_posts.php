@@ -15,7 +15,19 @@ header('Content-Type: application/json');
 
 $results = [];
 
+$isLoggedIn = Session::isLoggedIn();
+$currentUser = Session::getCurrentUser();
+
 foreach ($posts as $post) {
-    $results[] = $post->toArray();
+    $postArray = $post->toArray();
+    
+
+    if ($isLoggedIn) {
+        $postArray['can_edit'] = ($currentUser->getId() === $post->getAuthor()->getId() || $currentUser->isModerator());
+    } else {
+        $postArray['can_edit'] = false;
+    }
+
+    $results[] = $postArray;
 }
 echo json_encode($results);
