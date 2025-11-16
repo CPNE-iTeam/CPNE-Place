@@ -37,7 +37,7 @@ export class HtmlBuilder {
         postElement.appendChild(imagesContainer);
 
         const contentElement = document.createElement('p');
-        contentElement.textContent = post.Content;
+        contentElement.innerHTML = post.Content;
         contentElement.className = 'post-content';
         postElement.appendChild(contentElement);
 

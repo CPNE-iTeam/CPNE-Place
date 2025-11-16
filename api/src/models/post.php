@@ -37,6 +37,23 @@ class Post
         return true;
     }
 
+    public function toArray(): array
+    {
+        return [
+            "id" => $this->getId(),
+            "content" => $this->getContent(),
+            "author" => [
+                "id" => $this->getAuthor()->getId(),
+                "username" => $this->getAuthor()->getUsername(),
+                "is_certified" => $this->getAuthor()->isCertified(),
+            ],
+            "created_at" => $this->getCreatedAt()->format(DateTime::ATOM),
+            "likes_count" => $this->getLikesCount(),
+            "dislikes_count" => $this->getDislikesCount(),
+            "images" => $this->getImages()
+        ];
+    }
+
     public function getId(): ?int
     {
         return $this->id;

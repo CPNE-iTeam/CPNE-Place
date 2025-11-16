@@ -16,18 +16,6 @@ $post = $db->get_post($ID);
 header('Content-Type: application/json');
 
 
-$result = [
-    "id" => $post->getId(),
-    "content" => $post->getContent(),
-    "author" => [
-        "id" => $post->getAuthor()->getId(),
-        "username" => $post->getAuthor()->getUserName(),
-        "is_certified" => $post->getAuthor()->isCertified(),
-    ],
-    "created_at" => $post->getCreatedAt()->format(DateTime::ATOM),
-    "likes_count" => $post->getLikesCount(),
-    "dislikes_count" => $post->getDislikesCount(),
-    "images" => $post->getImages()
-];
+$result = $post->toArray();
 
 echo json_encode($result);

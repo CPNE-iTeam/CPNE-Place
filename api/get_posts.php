@@ -16,18 +16,6 @@ header('Content-Type: application/json');
 $results = [];
 
 foreach ($posts as $post) {
-    $results[] = [
-        "id" => $post->getId(),
-        "content" => $post->getContent(),
-        "author" => [
-            "id" => $post->getAuthor()->getId(),
-            "username" => $post->getAuthor()->getUserName(),
-            "is_certified" => $post->getAuthor()->isCertified(),
-        ],
-        "created_at" => $post->getCreatedAt()->format(DateTime::ATOM),
-        "likes_count" => $post->getLikesCount(),
-        "dislikes_count" => $post->getDislikesCount(),
-        "images" => $post->getImages()
-    ];
+    $results[] = $post->toArray();
 }
 echo json_encode($results);
