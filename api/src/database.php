@@ -72,8 +72,8 @@ class Database
         if ($username === null || $passwordHash === null) {
             throw new InvalidArgumentException("Username and password hash cannot be null.");
         }
-        $sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
-        return $this->query($sql, [$username, $passwordHash]);
+        $sql = "INSERT INTO users (username, password_hash, is_certified, is_moderator) VALUES (?, ?, ?, ?)";
+        return $this->query($sql, [$username, $passwordHash, $user->isCertified() ? '1' : '0', $user->isModerator() ? '1' : '0']);
     }
 
     public function get_user($userID = null, $username = null): ?User

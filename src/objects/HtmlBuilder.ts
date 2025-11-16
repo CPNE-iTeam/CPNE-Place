@@ -56,6 +56,25 @@ export class HtmlBuilder {
 
         }
 
+        if (post.CanEdit) {
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-post-button';
+            deleteButton.textContent = '🗑️';
+
+            deleteButton.addEventListener('click', async () => {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce post ?')) {
+                    try {
+                        const message = await API.deletePost(post.Id);
+                        console.info(message);
+                        postElement.remove();
+                    } catch (error) {
+                        alert((error as Error).message);
+                    }
+                }
+            });
+            bottomElement.appendChild(deleteButton);
+        }
+
         const reactionsElement = document.createElement('div');
         reactionsElement.className = 'post-reactions';
 

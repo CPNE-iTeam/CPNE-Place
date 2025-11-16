@@ -5,22 +5,24 @@ error_reporting(E_ALL);
 
 include_once(dirname(__FILE__) . "/src/models/post.php");
 include_once(dirname(__FILE__) . "/src/database.php");
+include_once(dirname(__FILE__) . "/src/session.php");
+header('Content-Type: application/json');
 
 
 
 $db = new Database();
 $posts = $db->get_posts();
 
-header('Content-Type: application/json');
 
 $results = [];
 
 $isLoggedIn = Session::isLoggedIn();
-$currentUser = Session::getCurrentUser();
+if ($isLoggedIn)
+    $currentUser = Session::getCurrentUser();
 
 foreach ($posts as $post) {
     $postArray = $post->toArray();
-    
+
 
     if ($isLoggedIn) {
         $postArray['can_edit'] = ($currentUser->getId() === $post->getAuthor()->getId() || $currentUser->isModerator());

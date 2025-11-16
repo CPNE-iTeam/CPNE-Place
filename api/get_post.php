@@ -7,14 +7,13 @@ include_once(dirname(__FILE__) . "/src/models/post.php");
 include_once(dirname(__FILE__) . "/src/database.php");
 include_once(dirname(__FILE__) . "/src/session.php");
 
+header('Content-Type: application/json');
 
 
 $db = new Database();
 
 $ID = intval($_POST['ID']);
 $post = $db->get_post($ID);
-
-header('Content-Type: application/json');
 
 
 $result = $post->toArray();

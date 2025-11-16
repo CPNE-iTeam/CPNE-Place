@@ -9,8 +9,9 @@ export class Post {
     private likesCount: number;
     private dislikesCount: number;
     private images: string[];
+    private canEdit: boolean;
 
-    constructor(id: number, content: string, author: User, createdAt: Date, fatherPostId?: number, likesCount: number = 0, dislikesCount: number = 0, images: string[] = []) {
+    constructor(id: number, content: string, author: User, createdAt: Date, fatherPostId?: number, likesCount: number = 0, dislikesCount: number = 0, images: string[] = [], canEdit: boolean = false) {
         this.id = id;
         this.content = content;
         this.author = author;
@@ -19,6 +20,7 @@ export class Post {
         this.likesCount = likesCount;
         this.dislikesCount = dislikesCount;
         this.images = images;
+        this.canEdit = canEdit;
     }
 
     get Id(): number {
@@ -51,5 +53,9 @@ export class Post {
 
     get Images(): string[] {
         return this.images;
+    }
+
+    get CanEdit(): boolean {
+        return this.canEdit;
     }
 }

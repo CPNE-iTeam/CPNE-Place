@@ -110,6 +110,8 @@ signupForm.addEventListener('submit', async (event) => {
         alert((error as Error).message);
     }
     loadLoginData();
+    loadPosts();
+
     return false;
 });
 
@@ -129,6 +131,8 @@ signinForm.addEventListener('submit', async (event) => {
     }
 
     loadLoginData();
+    loadPosts();
+
     return false;
 
 });

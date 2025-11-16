@@ -4,7 +4,6 @@ import { Post } from "./models/post";
 import { User } from "./models/user";
 
 export class API {
-
     static async getConfig(): Promise<GlobalConfig> {
         const response = await fetch(`${Config.API_BASE_URL}/get_config.php`)
         const data = await response.json();
@@ -122,7 +121,8 @@ export class API {
             undefined,
             postData.likes_count,
             postData.dislikes_count,
-            postData.images
+            postData.images,
+            postData.can_edit
         ));
     }
 
@@ -154,7 +154,8 @@ export class API {
             data.father_post_id,
             data.likes_count,
             data.dislikes_count,
-            data.images
+            data.images,
+            data.can_edit
         );
     }
 
@@ -221,6 +222,23 @@ export class API {
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data.message || 'Image upload failed');
+        }
+        return data.message;
+    }
+
+    static async deletePost(Id: number) {
+        let formData = new FormData();
+        formData.append('post_id', Id.toString());
+
+        const response = await fetch(`${Config.API_BASE_URL}/delete_post.php`, {
+            method: 'POST',
+            credentials: "include",
+            body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Delete post failed');
         }
         return data.message;
     }
