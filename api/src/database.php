@@ -67,7 +67,7 @@ class Database
 
     public function create_user(User $user)
     {
-        $username = $user->getUsername();
+        $username = htmlspecialchars($user->getUsername());
         $passwordHash = $user->getPasswordHash();
         if ($username === null || $passwordHash === null) {
             throw new InvalidArgumentException("Username and password hash cannot be null.");
@@ -101,7 +101,7 @@ class Database
 
     public function create_post(Post $post): bool
     {
-        $content = $post->getContent();
+        $content = htmlspecialchars($post->getContent());
         $authorId = $post->getAuthor()->getId();
         $createdAt = $post->getCreatedAt()->format('Y-m-d H:i:s');
 

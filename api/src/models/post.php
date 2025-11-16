@@ -18,7 +18,7 @@ class Post
         if ($content == null || $this->validateContent($content) === false) {
             throw new InvalidArgumentException("Content must be between " . MIN_POST_LENGTH . " and " . MAX_POST_LENGTH . " characters.");
         }
-        $this->content = $this->correctContent($content);
+        $this->content = $content;
         $this->author = $author;
         $this->created_at = $created_at;
         $this->father_post_id = $father_post_id;
@@ -27,11 +27,6 @@ class Post
         $this->images = $images;
     }
 
-
-    private function correctContent(string $content): string
-    {
-        return htmlspecialchars(strtolower($content));
-    }
 
     private function validateContent(string $content): bool
     {

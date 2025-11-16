@@ -17,16 +17,12 @@ class User
             throw new InvalidArgumentException("Username must be between " . MIN_USERNAME_LENGTH . " and " . MAX_USERNAME_LENGTH . " characters and contain only letters, numbers, underscores, or hyphens.");
         }
         
-        $this->username = $this->correctUsername($username);
+        $this->username = $username;
         $this->passwordHash = $passwordHash;
         $this->isCertified = $isCertified;
         $this->isModerator = $isModerator;
     }
 
-    private function correctUsername(string $username): string
-    {
-        return htmlspecialchars(strtolower($username));
-    }
 
     private function validateUsername(string $username): bool
     {
