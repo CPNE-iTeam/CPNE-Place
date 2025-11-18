@@ -1,7 +1,9 @@
 import { API } from './objects/api';
+import { Config } from './objects/config';
 import { HtmlBuilder } from './objects/HtmlBuilder';
 import type { GlobalConfig } from './objects/models/global_config';
 import { Popup } from './objects/popup';
+import "altcha";
 
 const signinButton = document.getElementById('signinButton') as HTMLElement;
 const signupButton = document.getElementById('signupButton') as HTMLElement;
@@ -17,6 +19,9 @@ const commentContent = document.getElementById('commentContent') as HTMLTextArea
 const commentForm = document.getElementById('commentForm') as HTMLFormElement;
 const commentsSection = document.getElementById('commentsSection') as HTMLElement;
 const commentFatherPostId = document.getElementById('commentFatherPostId') as HTMLInputElement;
+const signupAltcha = document.getElementById('signupAltcha') as HTMLElement;
+
+
 
 async function loadLoginData() {
     const isLoggedIn: boolean = await API.isLoggedIn();
@@ -57,10 +62,13 @@ export async function loadComments(fatherPostId: number) {
 
 function loadBannData(reason: string, endDate: string) {
     (document.getElementById('banReason') as HTMLSpanElement).textContent = reason;
-    (document.getElementById('banEndDate') as HTMLSpanElement).textContent = new Date(parseInt(endDate)*1000).toLocaleString();
+    (document.getElementById('banEndDate') as HTMLSpanElement).textContent = new Date(parseInt(endDate) * 1000).toLocaleString();
 }
 
 const backendConfig: GlobalConfig = await API.getConfig();
+
+signupAltcha.setAttribute('challengeurl', Config.API_BASE_URL + '/captcha.php');
+
 
 
 signinButton.addEventListener('click', () => {
@@ -105,9 +113,9 @@ signupForm.addEventListener('submit', async (event) => {
 
     const username = (document.getElementById('signupUsername') as HTMLInputElement).value;
     const password = (document.getElementById('signupPassword') as HTMLInputElement).value;
-
+    const altchaToken = (signupAltcha.querySelector('[name=altcha]') as HTMLInputElement).value;
     try {
-        const message = await API.registerUser(username, password);
+        const message = await API.registerUser(username, password, altchaToken);
         console.info(message);
         //alert(message);
         Popup.closePopup('signupPopup');

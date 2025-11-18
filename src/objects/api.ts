@@ -20,10 +20,11 @@ export class API {
     }
 
 
-    static async registerUser(username: string, password: string): Promise<string> {
+    static async registerUser(username: string, password: string, altcha: string): Promise<string> {
         let formData = new FormData();
         formData.append('username', username);
         formData.append('password', password);
+        formData.append('altcha', altcha);
 
         const response = await fetch(`${Config.API_BASE_URL}/register_user.php`, {
             method: 'POST',

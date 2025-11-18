@@ -59,6 +59,7 @@
                     <label for="signupPassword">Mot de passe:</label>
                     <input autocomplete="new-password" minlength="8" type="password" id="signupPassword"
                         name="signupPassword" required>
+                    <altcha-widget hidefooter hidelogo id="signupAltcha" challengeurl=""></altcha-widget>
                     <button type="submit">S'inscrire</button>
                 </form>
             </div>
@@ -103,7 +104,8 @@
         <div id="bannedPopup" class="popup banned-popup popup-hide">
             <div class="popup-content">
                 <h2>Vous êtes banni</h2>
-                <p>Vous êtes banni de CPNE Place. Vous pouvez contester cette décision en nous contactant par email <a href="mailto:contact@cpneplace.tobedefined">contact@cpneplace.tobedefined</a>.</p>
+                <p>Vous êtes banni de CPNE Place. Vous pouvez contester cette décision en nous contactant par email <a
+                        href="mailto:contact@cpneplace.tobedefined">contact@cpneplace.tobedefined</a>.</p>
                 <p>Raison : <span id="banReason"></span></p>
                 <p>Jusqu'au : <span id="banEndDate"></span></p>
             </div>
