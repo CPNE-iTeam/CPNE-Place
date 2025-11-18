@@ -21,6 +21,9 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
     --success: #10b981;
     --error: #ef4444;
+
+    --altcha-color-base: #000000;
+    --altcha-color-text: white;
 }
 
 body {
@@ -133,6 +136,7 @@ main {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -288,6 +292,7 @@ main {
         transform: translateY(50px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -510,7 +515,18 @@ input[type="hidden"] {
     text-align: center;
 }
 
-.mt-1 { margin-top: 0.5rem; }
-.mt-2 { margin-top: 1rem; }
-.mb-1 { margin-bottom: 0.5rem; }
-.mb-2 { margin-bottom: 1rem; }
+.mt-1 {
+    margin-top: 0.5rem;
+}
+
+.mt-2 {
+    margin-top: 1rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-2 {
+    margin-bottom: 1rem;
+}

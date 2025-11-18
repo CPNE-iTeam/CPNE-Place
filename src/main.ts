@@ -19,8 +19,9 @@ const commentContent = document.getElementById('commentContent') as HTMLTextArea
 const commentForm = document.getElementById('commentForm') as HTMLFormElement;
 const commentsSection = document.getElementById('commentsSection') as HTMLElement;
 const commentFatherPostId = document.getElementById('commentFatherPostId') as HTMLInputElement;
-const signupAltcha = document.getElementById('signupAltcha') as HTMLElement;
-
+const signupAltcha = document.getElementById('signupAltcha') as any;
+const publishAltcha = document.getElementById('publishAltcha') as any;
+const commentAltcha = document.getElementById('commentAltcha') as any;
 
 
 async function loadLoginData() {
@@ -67,8 +68,10 @@ function loadBannData(reason: string, endDate: string) {
 
 const backendConfig: GlobalConfig = await API.getConfig();
 
-signupAltcha.setAttribute('challengeurl', Config.API_BASE_URL + '/captcha.php');
-
+const captchas = [signupAltcha, publishAltcha, commentAltcha];
+for (const captcha of captchas) {
+    captcha.challengeurl = Config.API_BASE_URL + '/captcha.php';
+}
 
 
 signinButton.addEventListener('click', () => {
@@ -113,7 +116,7 @@ signupForm.addEventListener('submit', async (event) => {
 
     const username = (document.getElementById('signupUsername') as HTMLInputElement).value;
     const password = (document.getElementById('signupPassword') as HTMLInputElement).value;
-    const altchaToken = (signupAltcha.querySelector('[name=altcha]') as HTMLInputElement).value;
+    const altchaToken = (signupForm.querySelector('[name=altcha]') as HTMLInputElement).value;
     try {
         const message = await API.registerUser(username, password, altchaToken);
         console.info(message);
@@ -124,6 +127,8 @@ signupForm.addEventListener('submit', async (event) => {
     }
     loadLoginData();
     loadPosts();
+
+    signupAltcha.reset();
 
     return false;
 });
@@ -167,9 +172,10 @@ publishForm.addEventListener('submit', async (event) => {
 
     const content = (document.getElementById('postContent') as HTMLTextAreaElement).value;
     const postMedias = (document.getElementById('postMedias') as HTMLInputElement).files;
-
+    const altchaToken = (publishForm.querySelector('[name=altcha]') as HTMLInputElement).value;
+    
     try {
-        const data = await API.createPost(content);
+        const data = await API.createPost(content, altchaToken);
         console.info(data);
 
         if (postMedias) {
@@ -190,6 +196,7 @@ publishForm.addEventListener('submit', async (event) => {
     }
 
     loadPosts();
+    publishAltcha.reset();
     return false;
 });
 
@@ -200,10 +207,11 @@ commentForm.addEventListener('submit', async (event) => {
     const commentMedias = (document.getElementById('commentMedias') as HTMLInputElement).files;
     const content = (document.getElementById('commentContent') as HTMLTextAreaElement).value;
     const fatherPostId = parseInt(commentFatherPostId.value);
+    const altchaToken = (commentForm.querySelector('[name=altcha]') as HTMLInputElement).value;
 
 
     try {
-        const data = await API.createPost(content, fatherPostId);
+        const data = await API.createPost(content, altchaToken, fatherPostId);
         console.info(data);
 
 
@@ -222,7 +230,7 @@ commentForm.addEventListener('submit', async (event) => {
         alert((error as Error).message);
     }
     loadComments(fatherPostId);
-
+    commentAltcha.reset();
     return false;
 });
 

@@ -7,6 +7,21 @@ include_once(dirname(__FILE__) . "/src/models/user.php");
 include_once(dirname(__FILE__) . "/src/session.php");
 include_once(dirname(__FILE__) . "/src/database.php");
 
+require 'vendor/autoload.php';
+
+use AltchaOrg\Altcha\Altcha;
+
+
+$altcha = new Altcha(ALTCHA_HMAC_KEY);
+
+$isValid = $altcha->verifySolution($_POST['altcha']);
+
+if (!$isValid) {
+    http_response_code(400);
+    echo json_encode(["message" => "Invalid captcha."]);
+    exit();
+}
+
 header('Content-Type: application/json');
 
 if (!Session::isLoggedIn()) {

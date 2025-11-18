@@ -78,9 +78,10 @@ export class API {
         return data.message;
     }
 
-    static async createPost(content: string, fatherPostId?: number): Promise<any> {
+    static async createPost(content: string, altcha: string, fatherPostId?: number): Promise<any> {
         let formData = new FormData();
         formData.append('content', content);
+        formData.append('altcha', altcha);  
         if (fatherPostId !== undefined) {
             formData.append('father_post_id', fatherPostId.toString());
         }

@@ -59,7 +59,7 @@
                     <label for="signupPassword">Mot de passe:</label>
                     <input autocomplete="new-password" minlength="8" type="password" id="signupPassword"
                         name="signupPassword" required>
-                    <altcha-widget hidefooter hidelogo id="signupAltcha" challengeurl=""></altcha-widget>
+                    <altcha-widget floating hidefooter hidelogo id="signupAltcha" challengeurl=""></altcha-widget>
                     <button type="submit">S'inscrire</button>
                 </form>
             </div>
@@ -75,6 +75,9 @@
                     <label for="postContent">Contenu du post:</label>
                     <textarea id="postContent" name="postContent" required></textarea>
                     <input id="postMedias" type="file" name="postMedias" accept="image/*" multiple />
+                    <div style="background-color:#333;color:#fff">
+                        <altcha-widget floating hidefooter hidelogo id="publishAltcha" challengeurl=""></altcha-widget>
+                    </div>
                     <button type="submit">Publier</button>
                 </form>
             </div>
@@ -93,6 +96,7 @@
                     <label for="commentContent">Ajouter un commentaire:</label>
                     <textarea id="commentContent" name="commentContent" required></textarea>
                     <input id="commentMedias" type="file" name="commentMedias" accept="image/*" multiple />
+                    <altcha-widget floating hidefooter hidelogo id="commentAltcha" challengeurl=""></altcha-widget>
                     <button type="submit">Publier le commentaire</button>
                 </form>
             </div>
