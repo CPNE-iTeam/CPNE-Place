@@ -39,6 +39,10 @@ class Session
         if (isset($_SESSION["account_id"])) {
             $db = new Database();
             $user = $db->get_user($_SESSION["account_id"]);
+            if ($user === null) {
+                self::logout();
+                return false;
+            }
             $bannedUser = $db->get_user_bann($user->getID());
             if (!empty($bannedUser)) {
                 self::logout();
