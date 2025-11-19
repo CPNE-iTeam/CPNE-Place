@@ -103,11 +103,7 @@ export class API {
 
     static async getPosts(limit: number = 10, offset: number = 0): Promise<Post[]> {
 
-        const url = new URL(`${Config.API_BASE_URL}/get_posts.php`);
-        url.searchParams.set('limit', limit.toString());
-        url.searchParams.set('offset', offset.toString());
-
-        const response = await fetch(url.toString(), {
+        const response = await fetch(`${Config.API_BASE_URL}/get_posts.php?limit=${limit}&offset=${offset}`, {
             credentials: "include"
         });
 
