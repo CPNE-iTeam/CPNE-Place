@@ -193,23 +193,30 @@ publishForm.addEventListener('submit', async (event) => {
     try {
         const data = await API.createPost(content, altchaToken);
         console.info(data);
-
-        if (postMedias) {
-            for (let i = 0; i < postMedias.length; i++) {
-                const file = postMedias[i];
-                const uploadMessage = await API.uploadImage(file, data.post_id);
-                console.info(uploadMessage);
+        try {
+            if (postMedias) {
+                for (let i = 0; i < postMedias.length; i++) {
+                    const file = postMedias[i];
+                    const uploadMessage = await API.uploadImage(file, data.post_id);
+                    console.info(uploadMessage);
+                }
             }
+        } catch (error) {
+            API.deletePost(data.post_id);
+            alert((error as Error).message);
         }
-
-        //alert(message);
-        Popup.closePopup('publishPopup');
-        (document.getElementById('postContent') as HTMLTextAreaElement).value = '';
-        (document.getElementById('postMedias') as HTMLInputElement).value = '';
-
     } catch (error) {
         alert((error as Error).message);
     }
+
+
+
+    //alert(message);
+    Popup.closePopup('publishPopup');
+    (document.getElementById('postContent') as HTMLTextAreaElement).value = '';
+    (document.getElementById('postMedias') as HTMLInputElement).value = '';
+
+
 
     loadPosts();
     publishAltcha.reset();
@@ -230,13 +237,17 @@ commentForm.addEventListener('submit', async (event) => {
         const data = await API.createPost(content, altchaToken, fatherPostId);
         console.info(data);
 
-
-        if (commentMedias) {
-            for (let i = 0; i < commentMedias.length; i++) {
-                const file = commentMedias[i];
-                const uploadMessage = await API.uploadImage(file, data.post_id);
-                console.info(uploadMessage);
+        try {
+            if (commentMedias) {
+                for (let i = 0; i < commentMedias.length; i++) {
+                    const file = commentMedias[i];
+                    const uploadMessage = await API.uploadImage(file, data.post_id);
+                    console.info(uploadMessage);
+                }
             }
+        } catch (error) {
+            API.deletePost(data.post_id);
+            alert((error as Error).message);
         }
 
         //alert(message);
