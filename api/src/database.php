@@ -154,6 +154,7 @@ class Database
         $sql = "INSERT INTO posts (content, user_ID, created_at) VALUES (?, ?, ?)";
         return $this->query($sql, [$content, strval($authorId), $createdAt]);
     }
+
     private function buildPostQuery(): string
     {
         return "
@@ -174,9 +175,22 @@ class Database
         LEFT JOIN reactions ON reactions.post_ID = posts.ID
         /** WHERE_CLAUSE **/
         GROUP BY posts.ID, users.ID
-        ORDER BY posts.created_at DESC
+        /** ORDER_CLAUSE **/
     ";
     }
+
+    private function getOrderClause(string $sort): string
+    {
+        $allowed = [
+            "newest"        => "posts.created_at DESC",
+            "oldest"        => "posts.created_at ASC",
+            "most_likes"    => "likes_count DESC, posts.created_at DESC",
+            "most_dislikes" => "dislikes_count DESC, posts.created_at DESC",
+        ];
+
+        return $allowed[$sort] ?? $allowed["newest"]; // default fallback
+    }
+
 
 
     private function hydratePosts(array $rows): array
@@ -223,36 +237,44 @@ class Database
     }
 
 
-    public function get_posts(?bool $getComments = false, ?int $fatherPostId = null, ?int $limit = null, ?int $offset = null): array
-    {
+    public function get_posts(
+        ?bool $getComments = false,
+        ?int $fatherPostId = null,
+        ?int $limit = null,
+        ?int $offset = null,
+        string $sort = "newest"
+    ): array {
         $query = $this->buildPostQuery();
         $params = [];
 
+        // WHERE
         if ($getComments) {
             if ($fatherPostId === null) {
                 throw new InvalidArgumentException("fatherPostId is required when getting comments.");
             }
             $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.father_post_ID = ?", $query);
-            $params[] = strval($fatherPostId);
+            $params[] = $fatherPostId;
         } else {
             $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.father_post_ID IS NULL", $query);
         }
 
-        // Append pagination if requested
+        // ORDER
+        $orderClause = "ORDER BY " . $this->getOrderClause($sort);
+        $query = str_replace("/** ORDER_CLAUSE **/", $orderClause, $query);
+
+        // LIMIT/OFFSET
         if ($limit !== null) {
             $query .= " LIMIT ?";
-            $params[] = strval($limit);
+            $params[] = $limit;
             if ($offset !== null) {
                 $query .= " OFFSET ?";
-                $params[] = strval($offset);
+                $params[] = $offset;
             }
         }
 
         $rows = $this->select($query, $params);
-
         return $this->hydratePosts($rows);
     }
-
 
     public function get_post(int $ID): Post
     {
@@ -267,18 +289,35 @@ class Database
     }
 
 
-    public function get_user_posts(User $user): array
-    {
-        $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.user_ID = ?", $this->buildPostQuery());
-        $rows = $this->select($query, [$user->getID()]);
+    public function get_user_posts(
+        User $user,
+        ?int $limit = null,
+        ?int $offset = null,
+        string $sort = "newest"
+    ): array {
+        $query = $this->buildPostQuery();
+        $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.user_ID = ?", $query);
 
+        $orderClause = "ORDER BY " . $this->getOrderClause($sort);
+        $query = str_replace("/** ORDER_CLAUSE **/", $orderClause, $query);
+
+        $params = [$user->getID()];
+
+        if ($limit !== null) {
+            $query .= " LIMIT ?";
+            $params[] = $limit;
+            if ($offset !== null) {
+                $query .= " OFFSET ?";
+                $params[] = $offset;
+            }
+        }
+
+        $rows = $this->select($query, $params);
         return $this->hydratePosts($rows);
     }
 
 
-    /**
-     * Batch image loader (fixes N+1 problem)
-     */
+
     private function getImagesForPosts(array $postIds): array
     {
         if (empty($postIds)) return [];

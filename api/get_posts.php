@@ -13,7 +13,9 @@ header('Content-Type: application/json');
 $db = new Database();
 $limit = isset($_GET['limit']) ? intval($_GET['limit']) : null;
 $offset = isset($_GET['offset']) ? intval($_GET['offset']) : null;
-$posts = $db->get_posts(false, null, $limit, $offset);
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
+
+$posts = $db->get_posts(false, null, $limit, $offset, $sort);
 
 
 $results = [];

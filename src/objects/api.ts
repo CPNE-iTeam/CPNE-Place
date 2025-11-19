@@ -101,9 +101,9 @@ export class API {
     }
 
 
-    static async getPosts(limit: number = 10, offset: number = 0): Promise<Post[]> {
+    static async getPosts(limit: number = 10, offset: number = 0, sort: string = 'newest'): Promise<Post[]> {
 
-        const response = await fetch(`${Config.API_BASE_URL}/get_posts.php?limit=${limit}&offset=${offset}`, {
+        const response = await fetch(`${Config.API_BASE_URL}/get_posts.php?limit=${limit}&offset=${offset}&sort=${sort}`, {
             credentials: "include"
         });
 
