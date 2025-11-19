@@ -284,5 +284,25 @@ settingsUpdateUsernameForm.addEventListener('submit', async (event) => {
     }
 });
 
+settingsUpdatePictureForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const newPictureFile = (document.getElementById('newProfilePictureInput') as HTMLInputElement).files;
+
+    if (newPictureFile && newPictureFile.length > 0) {
+        try {
+            const message = await API.updateUserProfilePicture(newPictureFile[0]);
+            console.info(message);
+            alert(message);
+            settingsUpdatePictureForm.reset();
+            loadPosts();
+            Popup.closePopup('settingsPopup');
+        } catch (error) {
+            alert((error as Error).message);
+        }
+    } else {
+        alert('Please select a picture to upload.');
+    }
+});
+
 loadLoginData();
 loadPosts();

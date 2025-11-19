@@ -11,17 +11,19 @@ if (!Session::isLoggedIn()) {
     exit();
 }
 
+if (!isset($_POST['post_id'])) {
+    http_response_code(400);
+    echo json_encode(["message" => "No post ID provided."]);
+    exit();
+}
+
 if (!isset($_FILES['image'])) {
     http_response_code(400);
     echo json_encode(["message" => "No image file provided."]);
     exit();
 }
 
-if (!isset($_POST['post_id'])) {
-    http_response_code(400);
-    echo json_encode(["message" => "No post ID provided."]);
-    exit();
-}
+
 
 $postid = intval($_POST['post_id']);
 $db = new Database();

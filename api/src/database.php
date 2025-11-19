@@ -78,7 +78,7 @@ class Database
             $passwordHash,
             $user->getIsCertified() ? '1' : '0',
             $user->getIsModerator() ? '1' : '0',
-            $user->getImageFilename() ?? "NULL"
+            $user->getProfileImage() ?? "NULL"
         ]);
     }
 
@@ -101,11 +101,11 @@ class Database
             $passwordHash,
             $user->getIsCertified() ? '1' : '0',
             $user->getIsModerator() ? '1' : '0',
-            $user->getImageFilename() ?? "NULL",
+            $user->getProfileImage() ?? "NULL",
             strval($id)
         ]);
         //$sql = "INSERT INTO users (username, password_hash, is_certified, is_moderator) VALUES (?, ?, ?, ?)";
-        return $this->query($sql, [$username, $passwordHash, $user->isCertified() ? '1' : '0', $user->getIsModerator() ? '1' : '0']);
+        //return $this->query($sql, [$username, $passwordHash, $user->isCertified() ? '1' : '0', $user->getIsModerator() ? '1' : '0']);
     }
 
 
@@ -171,7 +171,8 @@ class Database
                     posts.father_post_id AS father_post_ID,
                     users.username AS username,
                     users.is_certified AS is_certified,
-                    users.password_hash AS password_hash,
+                    users.is_moderator AS is_moderator,
+                    users.image_filename as user_image_filename,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
                 FROM posts
@@ -190,8 +191,9 @@ class Database
                     posts.created_at AS created_at,
                     posts.user_ID AS user_ID,
                     users.username AS username,
-                    users.password_hash AS password_hash,
                     users.is_certified AS is_certified,
+                    users.is_moderator AS is_moderator,
+                    users.image_filename as user_image_filename,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
                     COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
                 FROM posts
@@ -214,8 +216,10 @@ class Database
             $author = new User(
                 intval($row['user_ID']),
                 $row['username'],
-                $row['password_hash'],
-                boolval($row['is_certified'])
+                "",
+                boolval($row['is_certified']),
+                boolval($row['is_moderator']),
+                $row['user_image_filename'] !== null && $row['user_image_filename'] !== 'NULL' ? (rtrim(UPLOAD_DIR, '/') . '/' . $row['user_image_filename']) : null
             );
 
             $images = $this->get_images(intval($row['ID']));
@@ -247,7 +251,8 @@ class Database
                 posts.father_post_ID AS father_post_ID,
                 users.username AS username,
                 users.is_certified AS is_certified,
-                users.password_hash AS password_hash,
+                users.is_moderator AS is_moderator,
+                users.image_filename as user_image_filename,
                 COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
                 COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
             FROM posts
@@ -271,8 +276,10 @@ class Database
         $author = new User(
             intval($row['user_ID']),
             $row['username'],
-            $row['password_hash'],
-            boolval($row['is_certified'])
+            "",
+            boolval($row['is_certified']),
+            boolval($row['is_moderator']),
+            $row['user_image_filename'] !== null && $row['user_image_filename'] !== 'NULL' ? (rtrim(UPLOAD_DIR, '/') . '/' . $row['user_image_filename']) : null
         );
 
         $images = $this->get_images(intval($row['ID']));
@@ -294,15 +301,12 @@ class Database
     public function get_user_posts(User $user): array
     {
         $sql = "
-                    SELECT
+            SELECT
                 posts.ID AS ID,
                 posts.content AS content,
                 posts.created_at AS created_at,
                 posts.user_ID AS user_ID,
                 posts.father_post_ID AS father_post_ID,
-                users.username AS username,
-                users.is_certified AS is_certified,
-                users.password_hash AS password_hash,
                 COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
                 COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
             FROM posts

@@ -118,7 +118,8 @@ export class API {
             new User(
                 postData.author.id,
                 postData.author.username,
-                postData.author.is_certified
+                postData.author.is_certified,
+                postData.author.profile_image
             ),
             new Date(postData.created_at),
             undefined,
@@ -151,7 +152,8 @@ export class API {
             new User(
                 data.author.id,
                 data.author.username,
-                data.author.is_certified
+                data.author.is_certified,
+                data.author.profile_image
             ),
             new Date(data.created_at),
             data.father_post_id,
@@ -299,6 +301,23 @@ export class API {
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data.message || 'Update username failed');
+        }
+        return data.message;
+    }
+
+    static async updateUserProfilePicture(imageFile: File): Promise<string> {
+        let formData = new FormData();
+        formData.append('profile_picture', imageFile);
+
+        const response = await fetch(`${Config.API_BASE_URL}/update_profile_picture.php`, {
+            method: 'POST',
+            credentials: "include",
+            body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Update profile picture failed');
         }
         return data.message;
     }

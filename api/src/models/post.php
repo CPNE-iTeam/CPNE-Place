@@ -46,6 +46,7 @@ class Post
                 "id" => $this->getAuthor()->getId(),
                 "username" => $this->getAuthor()->getUsername(),
                 "is_certified" => $this->getAuthor()->getIsCertified(),
+                "profile_image" => $this->getAuthor()->getProfileImage()
             ],
             "created_at" => $this->getCreatedAt()->format(DateTime::ATOM),
             "likes_count" => $this->getLikesCount(),

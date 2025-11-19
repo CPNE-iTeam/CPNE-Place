@@ -44,6 +44,17 @@ export class HtmlBuilder {
             }
         });
 
+        if (post.Author.ProfilePicture !== undefined && post.Author.ProfilePicture !== null) {
+            const postAuthorImage = document.createElement('img');
+            postAuthorImage.className = 'post-author-image';
+            let pictureUrl = post.Author.ProfilePicture;
+            postAuthorImage.src = `${Config.API_BASE_URL}/../${pictureUrl}`;;
+            postAuthorImage.alt = `Photo de profil de @${post.Author.UserName}`;
+            postAuthorImage.title = `@${post.Author.UserName}`;
+
+            headerElement.appendChild(postAuthorImage);
+        }
+        
         const postDate = document.createElement('span');
         postDate.className = 'post-date';
         postDate.textContent = post.CreatedAt.toLocaleString();

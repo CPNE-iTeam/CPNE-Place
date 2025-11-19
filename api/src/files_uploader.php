@@ -6,6 +6,7 @@ class FileUploader
 {
     private $uploadDir;
 
+
     public function __construct($uploadDir = UPLOAD_DIR)
     {
         $this->uploadDir = dirname(__FILE__) . "/../../" . rtrim($uploadDir, '/') . '/';
@@ -14,7 +15,7 @@ class FileUploader
         }
     }
 
-    public function uploadImage($file)
+    public function uploadImage($file, $newWidth = 800, $newHeight = null, $quality = 75)
     {
         if (!in_array($file['type'], ALLOWED_IMAGE_TYPES)) {
             throw new Exception("Error: Invalid file type!");
@@ -34,7 +35,7 @@ class FileUploader
         // Compress and resize
         $compressedFileName = uniqid("img_", true) . "." . $fileExt;
         $compressedDestination = $this->uploadDir . $compressedFileName;
-        $this->resizeAndCompressImage($destination, $compressedDestination, 800, 75);
+        $this->resizeAndCompressImage($destination, $compressedDestination, $newWidth, $newHeight, $quality);
 
         // Clean up
         unlink($destination);
@@ -43,10 +44,12 @@ class FileUploader
     }
 
 
-    function resizeAndCompressImage($source, $destination, $newWidth, $quality = 80)
+    function resizeAndCompressImage($source, $destination, $newWidth, $newHeight = null, $quality = 80)
     {
         list($width, $height, $type) = getimagesize($source);
-        $newHeight = ($newWidth / $width) * $height; // Maintain aspect ratio
+        if ($newHeight === null) {
+            $newHeight = intval($newWidth / $width * $height); // Maintain aspect ratio
+        }
         $newImage = imagecreatetruecolor($newWidth, $newHeight);
 
         switch ($type) {
