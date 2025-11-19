@@ -284,4 +284,21 @@ export class API {
         return data.message;
     }
 
+    static async updateUserUsername(newUsername: string): Promise<string> {
+        let formData = new FormData();
+        formData.append('new_username', newUsername);
+
+        const response = await fetch(`${Config.API_BASE_URL}/update_username.php`, {
+            method: 'POST',
+            credentials: "include",
+            body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Update username failed');
+        }
+        return data.message;
+    }
+
 }

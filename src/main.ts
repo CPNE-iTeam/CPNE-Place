@@ -264,5 +264,21 @@ settingsUpdatePasswordForm.addEventListener('submit', async (event) => {
 });
 
 
+settingsUpdateUsernameForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const newUsername = (document.getElementById('newUsernameInput') as HTMLInputElement).value;
+
+    try {
+        const message = await API.updateUserUsername(newUsername);
+        console.info(message);
+        alert(message);
+        settingsUpdateUsernameForm.reset();
+        loadPosts();
+        Popup.closePopup('settingsPopup');
+    } catch (error) {
+        alert((error as Error).message);
+    }
+});
+
 loadLoginData();
 loadPosts();
