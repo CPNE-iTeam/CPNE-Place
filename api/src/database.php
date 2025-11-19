@@ -223,20 +223,32 @@ class Database
     }
 
 
-    public function get_posts(?bool $getComments = false, ?int $fatherPostId = null): array
+    public function get_posts(?bool $getComments = false, ?int $fatherPostId = null, ?int $limit = null, ?int $offset = null): array
     {
         $query = $this->buildPostQuery();
+        $params = [];
 
         if ($getComments) {
             if ($fatherPostId === null) {
                 throw new InvalidArgumentException("fatherPostId is required when getting comments.");
             }
             $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.father_post_ID = ?", $query);
-            $rows = $this->select($query, [$fatherPostId]);
+            $params[] = strval($fatherPostId);
         } else {
             $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.father_post_ID IS NULL", $query);
-            $rows = $this->select($query);
         }
+
+        // Append pagination if requested
+        if ($limit !== null) {
+            $query .= " LIMIT ?";
+            $params[] = strval($limit);
+            if ($offset !== null) {
+                $query .= " OFFSET ?";
+                $params[] = strval($offset);
+            }
+        }
+
+        $rows = $this->select($query, $params);
 
         return $this->hydratePosts($rows);
     }

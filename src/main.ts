@@ -49,14 +49,52 @@ async function loadLoginData() {
 }
 
 
-async function loadPosts() {
-    const posts = await API.getPosts();
-    postsSection.innerHTML = '';
-    for (const post of posts) {
-        const postElement = HtmlBuilder.createPostElement(post);
-        postsSection.appendChild(postElement);
+
+
+// --- Infinite scroll / paginated posts ---
+const PAGE_SIZE = 10;
+let currentOffset = 0;
+let loadingPosts = false;
+let hasMorePosts = true;
+
+async function loadPostsPaginated(reset: boolean = false) {
+    if (loadingPosts) return;
+    if (reset) {
+        currentOffset = 0;
+        hasMorePosts = true;
+        postsSection.innerHTML = '';
+    }
+    if (!hasMorePosts) return;
+
+    loadingPosts = true;
+    try {
+        const posts = await API.getPosts(PAGE_SIZE, currentOffset);
+        for (const post of posts) {
+            const postElement = HtmlBuilder.createPostElement(post);
+            postsSection.appendChild(postElement);
+        }
+
+        currentOffset += posts.length;
+        if (posts.length < PAGE_SIZE) {
+            hasMorePosts = false;
+        }
+    } finally {
+        loadingPosts = false;
     }
 }
+
+let scrollThrottle: number | null = null;
+window.addEventListener('scroll', () => {
+    if (scrollThrottle !== null) return;
+    scrollThrottle = window.setTimeout(() => {
+        scrollThrottle = null;
+        const scrollPos = window.innerHeight + window.scrollY;
+        const threshold = document.body.offsetHeight - 400;
+        if (scrollPos >= threshold) {
+            loadPostsPaginated(false);
+        }
+    }, 150);
+});
 
 
 export async function loadComments(fatherPostId: number) {
@@ -141,7 +179,7 @@ signupForm.addEventListener('submit', async (event) => {
         alert((error as Error).message);
     }
     loadLoginData();
-    loadPosts();
+    await loadPostsPaginated(true);
 
     signupAltcha.reset();
 
@@ -176,7 +214,7 @@ signinForm.addEventListener('submit', async (event) => {
     }
 
     loadLoginData();
-    loadPosts();
+    await loadPostsPaginated(true);
 
     return false;
 
@@ -218,7 +256,7 @@ publishForm.addEventListener('submit', async (event) => {
 
 
 
-    loadPosts();
+    await loadPostsPaginated(true);
     publishAltcha.reset();
     return false;
 });
@@ -288,7 +326,7 @@ settingsUpdateUsernameForm.addEventListener('submit', async (event) => {
         console.info(message);
         alert(message);
         settingsUpdateUsernameForm.reset();
-        loadPosts();
+        await loadPostsPaginated(true);
         Popup.closePopup('settingsPopup');
     } catch (error) {
         alert((error as Error).message);
@@ -305,7 +343,7 @@ settingsUpdatePictureForm.addEventListener('submit', async (event) => {
             console.info(message);
             alert(message);
             settingsUpdatePictureForm.reset();
-            loadPosts();
+            await loadPostsPaginated(true);
             Popup.closePopup('settingsPopup');
         } catch (error) {
             alert((error as Error).message);
@@ -316,4 +354,4 @@ settingsUpdatePictureForm.addEventListener('submit', async (event) => {
 });
 
 loadLoginData();
-loadPosts();
+await loadPostsPaginated(true);
