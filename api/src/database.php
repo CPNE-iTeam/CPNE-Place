@@ -112,7 +112,7 @@ class Database
     public function get_user($userID = null, $username = null): ?User
     {
         if ($userID !== null) {
-            $sql = "SELECT * FROM users WHERE id = ?";
+            $sql = "SELECT * FROM users WHERE ID = ?";
             $result = $this->select($sql, [strval($userID)]);
         } elseif ($username !== null) {
             $sql = "SELECT * FROM users WHERE username = ?";
@@ -154,201 +154,133 @@ class Database
         $sql = "INSERT INTO posts (content, user_ID, created_at) VALUES (?, ?, ?)";
         return $this->query($sql, [$content, strval($authorId), $createdAt]);
     }
-
-
-    public function get_posts(?bool $getComments = false, ?int $fatherPostId = null): array
+    private function buildPostQuery(): string
     {
-        if ($getComments) {
-            if ($fatherPostId === null) {
-                throw new InvalidArgumentException("Father post ID must be provided to get comments.");
-            }
-            $sql = "
-                SELECT
-                    posts.ID AS ID,
-                    posts.content AS content,
-                    posts.created_at AS created_at,
-                    posts.user_ID AS user_ID,
-                    posts.father_post_id AS father_post_ID,
-                    users.username AS username,
-                    users.is_certified AS is_certified,
-                    users.is_moderator AS is_moderator,
-                    users.image_filename as user_image_filename,
-                    COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
-                    COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
-                FROM posts
-                LEFT JOIN users ON users.ID = posts.user_ID
-                LEFT JOIN reactions ON reactions.post_ID = posts.ID
-                WHERE posts.father_post_id = ?
-                GROUP BY posts.ID, posts.content, posts.created_at, posts.user_ID, users.username, users.password_hash
-                ORDER BY posts.created_at DESC
-            ";
-            $result = $this->select($sql, [strval($fatherPostId)]);
-        } else {
-            $sql = "
-                SELECT
-                    posts.ID AS ID,
-                    posts.content AS content,
-                    posts.created_at AS created_at,
-                    posts.user_ID AS user_ID,
-                    users.username AS username,
-                    users.is_certified AS is_certified,
-                    users.is_moderator AS is_moderator,
-                    users.image_filename as user_image_filename,
-                    COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
-                    COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
-                FROM posts
-                LEFT JOIN users ON users.ID = posts.user_ID
-                LEFT JOIN reactions ON reactions.post_ID = posts.ID
-                WHERE posts.father_post_id IS NULL
-                GROUP BY posts.ID, posts.content, posts.created_at, posts.user_ID, users.username, users.password_hash
-                ORDER BY posts.created_at DESC
-            ";
-            $result = $this->select($sql);
-        }
-
-
-        $posts = [];
-        foreach ($result as $row) {
-            if ($row['username'] === null) {
-                throw new RuntimeException("Author not found for post " . intval($row['ID']));
-            }
-
-            $author = new User(
-                intval($row['user_ID']),
-                $row['username'],
-                "",
-                boolval($row['is_certified']),
-                boolval($row['is_moderator']),
-                $row['user_image_filename'] !== null && $row['user_image_filename'] !== 'NULL' ? (rtrim(UPLOAD_DIR, '/') . '/' . $row['user_image_filename']) : null
-            );
-
-            $images = $this->get_images(intval($row['ID']));
-
-            $post = new Post(
-                intval($row['ID']),
-                $row['content'],
-                $author,
-                new DateTime($row['created_at']),
-                $getComments ? intval($row['father_post_ID']) : null,
-                intval($row['likes_count']),
-                intval($row['dislikes_count']),
-                $images
-            );
-            $posts[] = $post;
-        }
-        return $posts;
+        return "
+        SELECT
+            posts.ID AS ID,
+            posts.content AS content,
+            posts.created_at AS created_at,
+            posts.user_ID AS user_ID,
+            posts.father_post_ID AS father_post_ID,
+            users.username AS username,
+            users.is_certified AS is_certified,
+            users.is_moderator AS is_moderator,
+            users.image_filename as user_image_filename,
+            COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 END), 0) AS likes_count,
+            COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 END), 0) AS dislikes_count
+        FROM posts
+        LEFT JOIN users ON users.ID = posts.user_ID
+        LEFT JOIN reactions ON reactions.post_ID = posts.ID
+        /** WHERE_CLAUSE **/
+        GROUP BY posts.ID, users.ID
+        ORDER BY posts.created_at DESC
+    ";
     }
 
-    public function get_post(int $ID): Post
+
+    private function hydratePosts(array $rows): array
     {
-
-        $sql = "
-            SELECT
-                posts.ID AS ID,
-                posts.content AS content,
-                posts.created_at AS created_at,
-                posts.user_ID AS user_ID,
-                posts.father_post_ID AS father_post_ID,
-                users.username AS username,
-                users.is_certified AS is_certified,
-                users.is_moderator AS is_moderator,
-                users.image_filename as user_image_filename,
-                COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
-                COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
-            FROM posts
-            LEFT JOIN users ON users.ID = posts.user_ID
-            LEFT JOIN reactions ON reactions.post_ID = posts.ID
-            WHERE posts.ID = ?
-            GROUP BY posts.ID, posts.content, posts.created_at, posts.user_ID, users.username, users.password_hash
-            ORDER BY posts.created_at DESC
-            ";
-        $result = $this->select($sql, [strval($ID)]);
-
-        if (count($result) === 0) {
-            throw new RuntimeException("Post not found.");
-        }
-
-        $row = $result[0];
-        if ($row['username'] === null) {
-            throw new RuntimeException("Author not found for post " . intval($row['ID']));
-        }
-
-        $author = new User(
-            intval($row['user_ID']),
-            $row['username'],
-            "",
-            boolval($row['is_certified']),
-            boolval($row['is_moderator']),
-            $row['user_image_filename'] !== null && $row['user_image_filename'] !== 'NULL' ? (rtrim(UPLOAD_DIR, '/') . '/' . $row['user_image_filename']) : null
-        );
-
-        $images = $this->get_images(intval($row['ID']));
-
-        $post = new Post(
-            intval($row['ID']),
-            $row['content'],
-            $author,
-            new DateTime($row['created_at']),
-            $row['father_post_ID'] !== null ? intval($row['father_post_ID']) : null,
-            intval($row['likes_count']),
-            intval($row['dislikes_count']),
-            $images
-        );
-
-        return $post;
-    }
-
-    public function get_user_posts(User $user): array
-    {
-        $sql = "
-            SELECT
-                posts.ID AS ID,
-                posts.content AS content,
-                posts.created_at AS created_at,
-                posts.user_ID AS user_ID,
-                posts.father_post_ID AS father_post_ID,
-                COALESCE(SUM(CASE WHEN reactions.reaction_type = 1 THEN 1 ELSE 0 END), 0) AS likes_count,
-                COALESCE(SUM(CASE WHEN reactions.reaction_type = -1 THEN 1 ELSE 0 END), 0) AS dislikes_count
-            FROM posts
-            LEFT JOIN users ON users.ID = posts.user_ID
-            LEFT JOIN reactions ON reactions.post_ID = posts.ID
-            WHERE posts.user_ID = ?
-            GROUP BY posts.ID, posts.content, posts.created_at, posts.user_ID, users.username, users.password_hash
-            ORDER BY posts.created_at DESC
-        ";
-
-
-        $result = $this->select($sql, [strval($user->getID())]);
         $posts = [];
-        foreach ($result as $row) {
-            $author = $this->get_user(intval($row['user_ID']));
-            if ($author === null) {
-                throw new RuntimeException("Author not found for post " . intval($row['ID']));
+        $userCache = [];
+
+        // Batch-load images in a single query
+        $images = $this->getImagesForPosts(array_column($rows, 'ID'));
+
+        foreach ($rows as $row) {
+
+            $userId = intval($row['user_ID']);
+
+            // Cache user object
+            if (!isset($userCache[$userId])) {
+                if ($row['username'] === null) {
+                    throw new RuntimeException("Author missing for post " . $row['ID']);
+                }
+
+                $userCache[$userId] = new User(
+                    $userId,
+                    $row['username'],
+                    "",
+                    boolval($row['is_certified']),
+                    boolval($row['is_moderator']),
+                    $row['user_image_filename'] !== null && $row['user_image_filename'] !== 'NULL' ? (rtrim(UPLOAD_DIR, '/') . '/' . $row['user_image_filename']) : null
+                );
             }
-            $post = new Post(
+
+            $posts[] = new Post(
                 intval($row['ID']),
                 $row['content'],
-                $author,
+                $userCache[$userId],
                 new DateTime($row['created_at']),
                 $row['father_post_ID'] !== null ? intval($row['father_post_ID']) : null,
                 intval($row['likes_count']),
                 intval($row['dislikes_count']),
-                $this->get_images(intval($row['ID']))
+                $images[$row['ID']] ?? []
             );
-            $posts[] = $post;
         }
+
         return $posts;
     }
 
 
-    public function get_images(int $postID): array
+    public function get_posts(?bool $getComments = false, ?int $fatherPostId = null): array
     {
-        $sql = "SELECT filename FROM images WHERE post_ID = ?";
-        $result = $this->select($sql, [strval($postID)]);
-        $images = [];
-        foreach ($result as $row) {
-            $images[] = rtrim(UPLOAD_DIR, '/') . '/' . $row['filename'];
+        $query = $this->buildPostQuery();
+
+        if ($getComments) {
+            if ($fatherPostId === null) {
+                throw new InvalidArgumentException("fatherPostId is required when getting comments.");
+            }
+            $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.father_post_ID = ?", $query);
+            $rows = $this->select($query, [$fatherPostId]);
+        } else {
+            $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.father_post_ID IS NULL", $query);
+            $rows = $this->select($query);
         }
+
+        return $this->hydratePosts($rows);
+    }
+
+
+    public function get_post(int $ID): Post
+    {
+        $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.ID = ?", $this->buildPostQuery());
+        $rows = $this->select($query, [$ID]);
+
+        if (!$rows) {
+            throw new RuntimeException("Post not found.");
+        }
+
+        return $this->hydratePosts($rows)[0];
+    }
+
+
+    public function get_user_posts(User $user): array
+    {
+        $query = str_replace("/** WHERE_CLAUSE **/", "WHERE posts.user_ID = ?", $this->buildPostQuery());
+        $rows = $this->select($query, [$user->getID()]);
+
+        return $this->hydratePosts($rows);
+    }
+
+
+    /**
+     * Batch image loader (fixes N+1 problem)
+     */
+    private function getImagesForPosts(array $postIds): array
+    {
+        if (empty($postIds)) return [];
+
+        $placeholders = implode(',', array_fill(0, count($postIds), '?'));
+
+        $sql = "SELECT post_ID, filename FROM images WHERE post_ID IN ($placeholders)";
+        $rows = $this->select($sql, $postIds);
+
+        $images = [];
+        foreach ($rows as $row) {
+            $images[$row['post_ID']][] = rtrim(UPLOAD_DIR, '/') . '/' . $row['filename'];
+        }
+
         return $images;
     }
 
