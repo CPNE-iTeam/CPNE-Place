@@ -72,9 +72,42 @@ class Database
         if ($username === null || $passwordHash === null) {
             throw new InvalidArgumentException("Username and password hash cannot be null.");
         }
-        $sql = "INSERT INTO users (username, password_hash, is_certified, is_moderator) VALUES (?, ?, ?, ?)";
-        return $this->query($sql, [$username, $passwordHash, $user->isCertified() ? '1' : '0', $user->isModerator() ? '1' : '0']);
+        $sql = "INSERT INTO users (username, password_hash, is_certified, is_moderator, image_filename) VALUES (?, ?, ?, ?, ?)";
+        return $this->query($sql, [
+            $username,
+            $passwordHash,
+            $user->getIsCertified() ? '1' : '0',
+            $user->getIsModerator() ? '1' : '0',
+            $user->getImageFilename() ?? "NULL"
+        ]);
     }
+
+
+    public function update_user(User $user)
+    {
+        $username = htmlspecialchars($user->getUsername());
+        $passwordHash = $user->getPasswordHash();
+        if ($username === null || $passwordHash === null) {
+            throw new InvalidArgumentException("Username and password hash cannot be null.");
+        }
+        $id = $user->getID();
+        if ($id === null) {
+            throw new InvalidArgumentException("User ID cannot be null for update.");
+        }
+
+        $sql = "UPDATE users SET username = ?, password_hash = ?, is_certified = ?, is_moderator = ?, image_filename = ? WHERE ID = ?";
+        return $this->query($sql, [
+            $username,
+            $passwordHash,
+            $user->getIsCertified() ? '1' : '0',
+            $user->getIsModerator() ? '1' : '0',
+            $user->getImageFilename() ?? "NULL",
+            strval($id)
+        ]);
+        //$sql = "INSERT INTO users (username, password_hash, is_certified, is_moderator) VALUES (?, ?, ?, ?)";
+        return $this->query($sql, [$username, $passwordHash, $user->isCertified() ? '1' : '0', $user->getIsModerator() ? '1' : '0']);
+    }
+
 
     public function get_user($userID = null, $username = null): ?User
     {
@@ -98,6 +131,7 @@ class Database
             $row['password_hash'],
             boolval($row['is_certified']),
             boolval($row['is_moderator']),
+            $row['image_filename'] !== null && $row['image_filename'] !== 'NULL' ? $row['image_filename'] : null
         );
     }
 

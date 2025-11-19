@@ -20,7 +20,7 @@ $result = $post->toArray();
 
 if (Session::isLoggedIn()) {
     $currentUser = Session::getCurrentUser();
-    $result['can_edit'] = ($currentUser->getId() === $post->getAuthor()->getId() || $currentUser->isModerator());
+    $result['can_edit'] = ($currentUser->getId() === $post->getAuthor()->getId() || $currentUser->getIsModerator());
 } else {
     $result['can_edit'] = false;
 }

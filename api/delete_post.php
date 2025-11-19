@@ -32,7 +32,7 @@ try {
     exit();
 }
 
-if ($post->getAuthor()->getId() !== $user->getId() && !$user->isModerator()) {
+if ($post->getAuthor()->getId() !== $user->getId() && !$user->getIsModerator()) {
     http_response_code(403);
     echo json_encode(["error" => "Forbidden"]);
     exit();

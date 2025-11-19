@@ -14,7 +14,7 @@ if (!Session::isLoggedIn()) {
 
 $user = Session::getCurrentUser();
 
-if (!$user->isModerator()) {
+if (!$user->getIsModerator()) {
     http_response_code(403);
     echo json_encode(['message' => 'Forbidden']);
     exit();

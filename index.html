@@ -19,6 +19,8 @@
                 <li><a id="signinButton">Se connecter</a></li>
                 <li><a id="signupButton">S'inscrire</a></li>
                 <li><a id="signoutButton">Se déconnecter</a></li>
+                <li><a id="settingsButton">Paramètres</a></li>
+
             </ul>
             <button class="publish-button" id="publishButton">Publier</button>
         </nav>
@@ -114,7 +116,40 @@
                 <p>Jusqu'au : <span id="banEndDate"></span></p>
             </div>
         </div>
-    </main>
+
+        <!-- Settings popup -->
+        <div id="settingsPopup" class="popup settings-popup popup-hide">
+            <div class="popup-content">
+                <button class="popup-close" id="closeSettingsPopup">&times;</button>
+                <h2>Paramètres du compte</h2>
+                <form id="settingsUpdateUsernameForm">
+                    <h3>Changer le nom d'utilisateur</h3>
+                    <label for="newUsernameInput">Nouveau nom d'utilisateur:</label>
+                    <input type="text" id="newUsernameInput" name="newUsername"
+                        title="Le nom d’utilisateur doit contenir entre 3 et 25 caractères et ne peut inclure que des lettres minuscules (a–z), des chiffres (0–9), des underscores (_) ou des points (.)."
+                        required>
+                    <button type="submit">Mettre à jour le nom d'utilisateur</button>
+                </form>
+
+                <form id="settingsUpdatePasswordForm">
+                    <h3>Changer le mot de passe</h3>
+                    <label for="currentPasswordInput">Mot de passe actuel:</label>
+                    <input type="password" id="currentPasswordInput" name="currentPassword" required>
+                    <label for="newPasswordInput">Nouveau mot de passe:</label>
+                    <input minlength="8" type="password" id="newPasswordInput" name="newPassword" required>
+                    <button type="submit">Mettre à jour le mot de passe</button>
+                </form>
+
+                <form id="settingsUpdatePictureForm">
+                    <h3>Changer la photo de profil</h3>
+                    <label for="newProfilePictureInput">Nouvelle photo de profil:</label>
+                    <input type="file" id="newProfilePictureInput" name="newProfilePicture" accept="image/*" required>
+                    <button type="submit">Mettre à jour la photo de profil</button>
+                </form>
+
+            </div>
+        </div>
+    </main> 
 
     <footer></footer>
 </body>

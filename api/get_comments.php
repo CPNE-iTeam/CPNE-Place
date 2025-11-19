@@ -28,7 +28,7 @@ foreach ($comments as $comment) {
     $postArray = $comment->toArray();
 
     if ($isLoggedIn) {
-        $postArray['can_edit'] = ($currentUser->getId() === $comment->getAuthor()->getId() || $currentUser->isModerator());
+        $postArray['can_edit'] = ($currentUser->getId() === $comment->getAuthor()->getId() || $currentUser->getIsModerator());
     } else {
         $postArray['can_edit'] = false;
     }

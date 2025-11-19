@@ -8,8 +8,9 @@ class User
     private string $passwordHash;
     private bool $isCertified;
     private bool $isModerator;
+    private ?string $imageFilename;
 
-    public function __construct(?int $id, string $username, string $passwordHash, bool $isCertified = false, bool $isModerator = false)
+    public function __construct(?int $id, string $username, string $passwordHash, bool $isCertified = false, bool $isModerator = false, ?string $imageFilename = null)
     {
         $this->id = $id;
 
@@ -21,6 +22,7 @@ class User
         $this->passwordHash = $passwordHash;
         $this->isCertified = $isCertified;
         $this->isModerator = $isModerator;
+        $this->imageFilename = $imageFilename;
     }
 
 
@@ -45,12 +47,16 @@ class User
     {
         return $this->passwordHash;
     }
-    public function isCertified(): bool
+    public function getIsCertified(): bool
     {
         return $this->isCertified;
     }
-    public function isModerator(): bool
+    public function getIsModerator(): bool
     {
         return $this->isModerator;
+    }
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
     }
 }

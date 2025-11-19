@@ -24,7 +24,7 @@ foreach ($posts as $post) {
     $postArray = $post->toArray();
 
     if ($isLoggedIn) {
-        $postArray['can_edit'] = ($currentUser->getId() === $post->getAuthor()->getId() || $currentUser->isModerator());
+        $postArray['can_edit'] = ($currentUser->getId() === $post->getAuthor()->getId() || $currentUser->getIsModerator());
     } else {
         $postArray['can_edit'] = false;
     }

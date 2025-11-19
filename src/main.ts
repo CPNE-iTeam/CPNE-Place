@@ -22,6 +22,11 @@ const commentFatherPostId = document.getElementById('commentFatherPostId') as HT
 const signupAltcha = document.getElementById('signupAltcha') as any;
 const publishAltcha = document.getElementById('publishAltcha') as any;
 const commentAltcha = document.getElementById('commentAltcha') as any;
+const settingsButton = document.getElementById('settingsButton') as HTMLElement;
+const newUsernameInput = document.getElementById('newUsernameInput') as HTMLInputElement;
+const settingsUpdatePasswordForm = document.getElementById('settingsUpdatePasswordForm') as HTMLFormElement;
+const settingsUpdateUsernameForm = document.getElementById('settingsUpdateUsernameForm') as HTMLFormElement;
+const settingsUpdatePictureForm = document.getElementById('settingsUpdatePictureForm') as HTMLFormElement;
 
 
 async function loadLoginData() {
@@ -31,11 +36,13 @@ async function loadLoginData() {
         signupButton.style.display = 'none';
         signoutButton.style.display = 'inline-block';
         publishButton.style.display = 'inline-block';
+        settingsButton.style.display = 'inline-block';
     } else {
         signinButton.style.display = 'inline-block';
         signupButton.style.display = 'inline-block';
         signoutButton.style.display = 'none';
         publishButton.style.display = 'none';
+        settingsButton.style.display = 'none';
     }
 }
 
@@ -95,13 +102,19 @@ signoutButton.addEventListener('click', async () => {
     }
 });
 
-
+settingsButton.addEventListener('click', () => {
+    Popup.openPopup('settingsPopup');
+});
 
 
 
 signupUsername.setAttribute('pattern', backendConfig.UsernamePattern.source);
 signupUsername.setAttribute('minlength', backendConfig.MinUsernameLength.toString());
 signupUsername.setAttribute('maxlength', backendConfig.MaxUsernameLength.toString());
+
+newUsernameInput.setAttribute('pattern', backendConfig.UsernamePattern.source);
+newUsernameInput.setAttribute('minlength', backendConfig.MinUsernameLength.toString());
+newUsernameInput.setAttribute('maxlength', backendConfig.MaxUsernameLength.toString());
 
 postContent.setAttribute('pattern', backendConfig.ContentPattern.source);
 postContent.setAttribute('maxlength', backendConfig.MaxPostLength.toString());
@@ -234,6 +247,21 @@ commentForm.addEventListener('submit', async (event) => {
     return false;
 });
 
+settingsUpdatePasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const currentPassword = (document.getElementById('currentPasswordInput') as HTMLInputElement).value;
+    const newPassword = (document.getElementById('newPasswordInput') as HTMLInputElement).value;
+
+    try {
+        const message = await API.updateUserPassword(currentPassword, newPassword);
+        console.info(message);
+        alert(message);
+        settingsUpdatePasswordForm.reset();
+        Popup.closePopup('settingsPopup');
+    } catch (error) {
+        alert((error as Error).message);
+    }
+});
 
 
 loadLoginData();

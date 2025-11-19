@@ -10,6 +10,7 @@ include_once(dirname(__FILE__) . "/src/database.php");
 require 'vendor/autoload.php';
 
 use AltchaOrg\Altcha\Altcha;
+header('Content-Type: application/json');
 
 
 $altcha = new Altcha(ALTCHA_HMAC_KEY);
@@ -22,7 +23,6 @@ if (!$isValid) {
     exit();
 }
 
-header('Content-Type: application/json');
 
 if (!Session::isLoggedIn()) {
     http_response_code(401);

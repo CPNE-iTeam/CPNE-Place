@@ -266,4 +266,22 @@ export class API {
         return data.message;
     }
 
+    static async updateUserPassword(currentPassword: string, newPassword: string): Promise<string> {
+        let formData = new FormData();
+        formData.append('password', currentPassword);
+        formData.append('new_password', newPassword);
+
+        const response = await fetch(`${Config.API_BASE_URL}/update_password.php`, {
+            method: 'POST',
+            credentials: "include",
+            body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Update password failed');
+        }
+        return data.message;
+    }
+
 }
