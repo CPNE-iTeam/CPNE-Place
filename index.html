@@ -42,6 +42,7 @@
                     <input type="text" id="signinUsername" name="signinUsername" required autofocus>
                     <label for="signinPassword">Mot de passe:</label>
                     <input type="password" id="signinPassword" name="signinPassword" required>
+                    <altcha-widget floating hidefooter hidelogo id="signinAltcha" challengeurl=""></altcha-widget>
                     <button type="submit">Se connecter</button>
                 </form>
             </div>
@@ -77,9 +78,7 @@
                     <label for="postContent">Contenu du post:</label>
                     <textarea id="postContent" name="postContent" required></textarea>
                     <input id="postMedias" type="file" name="postMedias" accept="image/*" multiple />
-                    <div style="background-color:#333;color:#fff">
-                        <altcha-widget floating hidefooter hidelogo id="publishAltcha" challengeurl=""></altcha-widget>
-                    </div>
+                    <altcha-widget floating hidefooter hidelogo id="publishAltcha" challengeurl=""></altcha-widget>
                     <button type="submit">Publier</button>
                 </form>
             </div>
@@ -136,6 +135,7 @@
                     <label for="currentPasswordInput">Mot de passe actuel:</label>
                     <input type="password" id="currentPasswordInput" name="currentPassword" required>
                     <label for="newPasswordInput">Nouveau mot de passe:</label>
+                    <altcha-widget floating hidefooter hidelogo id="updatePasswordAltcha" challengeurl=""></altcha-widget>
                     <input minlength="8" type="password" id="newPasswordInput" name="newPassword" required>
                     <button type="submit">Mettre à jour le mot de passe</button>
                 </form>
@@ -149,7 +149,7 @@
 
             </div>
         </div>
-    </main> 
+    </main>
 
     <footer></footer>
 </body>

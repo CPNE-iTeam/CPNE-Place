@@ -10,6 +10,22 @@ include_once(dirname(__FILE__) . "/src/crypto.php");
 
 header('Content-Type: application/json');
 
+require 'vendor/autoload.php';
+
+use AltchaOrg\Altcha\Altcha;
+
+header('Content-Type: application/json');
+
+
+$altcha = new Altcha(ALTCHA_HMAC_KEY);
+
+$isValid = $altcha->verifySolution($_POST['altcha']);
+
+if (!$isValid) {
+    http_response_code(400);
+    echo json_encode(["message" => "Invalid captcha."]);
+    exit();
+}
 
 if (!Session::isLoggedIn()) {
     http_response_code(401);

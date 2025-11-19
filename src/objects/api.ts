@@ -39,10 +39,11 @@ export class API {
         return data.message;
     }
 
-    static async loginUser(username: string, password: string): Promise<any> {
+    static async loginUser(username: string, password: string, altcha: string): Promise<any> {
         let formData = new FormData();
         formData.append('username', username);
         formData.append('password', password);
+        formData.append('altcha', altcha);
 
         const response = await fetch(`${Config.API_BASE_URL}/login_user.php`, {
             method: 'POST',
@@ -266,11 +267,12 @@ export class API {
         return data.message;
     }
 
-    static async updateUserPassword(currentPassword: string, newPassword: string): Promise<string> {
+    static async updateUserPassword(currentPassword: string, newPassword: string, altcha: string): Promise<string> {
         let formData = new FormData();
         formData.append('password', currentPassword);
         formData.append('new_password', newPassword);
-
+        formData.append('altcha', altcha);
+        
         const response = await fetch(`${Config.API_BASE_URL}/update_password.php`, {
             method: 'POST',
             credentials: "include",

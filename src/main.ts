@@ -22,6 +22,8 @@ const commentFatherPostId = document.getElementById('commentFatherPostId') as HT
 const signupAltcha = document.getElementById('signupAltcha') as any;
 const publishAltcha = document.getElementById('publishAltcha') as any;
 const commentAltcha = document.getElementById('commentAltcha') as any;
+const signinAltcha = document.getElementById('signinAltcha') as any;
+const updatePasswordAltcha = document.getElementById('updatePasswordAltcha') as any;
 const settingsButton = document.getElementById('settingsButton') as HTMLElement;
 const newUsernameInput = document.getElementById('newUsernameInput') as HTMLInputElement;
 const settingsUpdatePasswordForm = document.getElementById('settingsUpdatePasswordForm') as HTMLFormElement;
@@ -75,7 +77,7 @@ function loadBannData(reason: string, endDate: string) {
 
 const backendConfig: GlobalConfig = await API.getConfig();
 
-const captchas = [signupAltcha, publishAltcha, commentAltcha];
+const captchas = [signupAltcha, publishAltcha, commentAltcha, signinAltcha, updatePasswordAltcha];
 for (const captcha of captchas) {
     captcha.challengeurl = Config.API_BASE_URL + '/captcha.php';
 }
@@ -151,9 +153,10 @@ signinForm.addEventListener('submit', async (event) => {
 
     const username = (document.getElementById('signinUsername') as HTMLInputElement).value;
     const password = (document.getElementById('signinPassword') as HTMLInputElement).value;
+    const altchaToken = (signinForm.querySelector('[name=altcha]') as HTMLInputElement).value;
 
     try {
-        const data = await API.loginUser(username, password);
+        const data = await API.loginUser(username, password, altchaToken);
 
         if (data.is_banned) {
             console.log(data.message)
@@ -186,7 +189,7 @@ publishForm.addEventListener('submit', async (event) => {
     const content = (document.getElementById('postContent') as HTMLTextAreaElement).value;
     const postMedias = (document.getElementById('postMedias') as HTMLInputElement).files;
     const altchaToken = (publishForm.querySelector('[name=altcha]') as HTMLInputElement).value;
-    
+
     try {
         const data = await API.createPost(content, altchaToken);
         console.info(data);
@@ -251,9 +254,10 @@ settingsUpdatePasswordForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const currentPassword = (document.getElementById('currentPasswordInput') as HTMLInputElement).value;
     const newPassword = (document.getElementById('newPasswordInput') as HTMLInputElement).value;
+    const altchaToken = (settingsUpdatePasswordForm.querySelector('[name=altcha]') as HTMLInputElement).value;
 
     try {
-        const message = await API.updateUserPassword(currentPassword, newPassword);
+        const message = await API.updateUserPassword(currentPassword, newPassword, altchaToken);
         console.info(message);
         alert(message);
         settingsUpdatePasswordForm.reset();

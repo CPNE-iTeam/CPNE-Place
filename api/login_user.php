@@ -7,6 +7,23 @@ include_once(dirname(__FILE__) . "/src/models/user.php");
 include_once(dirname(__FILE__) . "/src/crypto.php");
 include_once(dirname(__FILE__) . "/src/session.php");
 
+require 'vendor/autoload.php';
+
+use AltchaOrg\Altcha\Altcha;
+header('Content-Type: application/json');
+
+
+$altcha = new Altcha(ALTCHA_HMAC_KEY);
+
+$isValid = $altcha->verifySolution($_POST['altcha']);
+
+if (!$isValid) {
+    http_response_code(400);
+    echo json_encode(["message" => "Invalid captcha."]);
+    exit();
+}
+
+
 $username = $_POST['username'];
 $password = $_POST['password'];
 
