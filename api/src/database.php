@@ -182,9 +182,9 @@ class Database
     private function getOrderClause(string $sort): string
     {
         $allowed = [
-            "newest"        => "posts.created_at DESC",
-            "oldest"        => "posts.created_at ASC",
-            "most_likes"    => "likes_count DESC, posts.created_at DESC",
+            "newest" => "posts.created_at DESC",
+            "oldest" => "posts.created_at ASC",
+            "most_likes" => "likes_count DESC, posts.created_at DESC",
             "most_dislikes" => "dislikes_count DESC, posts.created_at DESC",
         ];
 
@@ -199,7 +199,8 @@ class Database
         $userCache = [];
 
         // Batch-load images in a single query
-        $images = $this->getImagesForPosts(array_column($rows, 'ID'));
+        $images = $this->getImagesForPosts(postIds: array_column($rows, 'ID'));
+        $videos = $this->getVideosForPosts(postIds: array_column($rows, 'ID'));
 
         foreach ($rows as $row) {
 
@@ -229,7 +230,8 @@ class Database
                 $row['father_post_ID'] !== null ? intval($row['father_post_ID']) : null,
                 intval($row['likes_count']),
                 intval($row['dislikes_count']),
-                $images[$row['ID']] ?? []
+                $images[$row['ID']] ?? [],
+                $videos[$row['ID']] ?? []
             );
         }
 
@@ -330,7 +332,8 @@ class Database
 
     private function getImagesForPosts(array $postIds): array
     {
-        if (empty($postIds)) return [];
+        if (empty($postIds))
+            return [];
 
         $placeholders = implode(',', array_fill(0, count($postIds), '?'));
 
@@ -345,6 +348,34 @@ class Database
         return $images;
     }
 
+    public function get_videos(int $postID): array
+    {
+        $sql = "SELECT filename FROM videos WHERE post_ID = ?";
+        $result = $this->select($sql, [strval($postID)]);
+        $videos = [];
+        foreach ($result as $row) {
+            $videos[] = rtrim(UPLOAD_DIR, '/') . '/' . $row['filename'];
+        }
+        return $videos;
+    }
+
+    private function getVideosForPosts(array $postIds): array
+    {
+        if (empty($postIds))
+            return [];
+
+        $placeholders = implode(',', array_fill(0, count($postIds), '?'));
+
+        $sql = "SELECT post_ID, filename FROM videos WHERE post_ID IN ($placeholders)";
+        $rows = $this->select($sql, $postIds);
+
+        $videos = [];
+        foreach ($rows as $row) {
+            $videos[$row['post_ID']][] = rtrim(UPLOAD_DIR, '/') . '/' . $row['filename'];
+        }
+
+        return $videos;
+    }
 
     // public function get_comments(int $fatherPostId): array
     // {
@@ -406,6 +437,11 @@ class Database
         return $this->query($sql, [strval($postID), $filename]);
     }
 
+    public function new_video_upload(int $postID, string $filename): bool
+    {
+        $sql = "INSERT INTO videos (post_ID, filename) VALUES (?, ?)";
+        return $this->query($sql, [strval($postID), $filename]);
+    }
 
     public function delete_post(int $postID): bool
     {
@@ -415,6 +451,9 @@ class Database
 
 
         $sql = "DELETE FROM images WHERE post_ID = ?";
+        $r = $this->query($sql, [strval($postID)]) && $r;
+
+        $sql = "DELETE FROM videos WHERE post_ID = ?";
         $r = $this->query($sql, [strval($postID)]) && $r;
 
         $sql = "DELETE FROM posts WHERE ID = ?";

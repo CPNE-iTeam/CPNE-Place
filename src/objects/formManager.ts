@@ -111,7 +111,11 @@ export class FormManager {
             const data = await API.createPost(content, altchaToken);
             if (postMediasFiles) {
                 for (let i = 0; i < postMediasFiles.length; i++) {
-                    await API.uploadImage(postMediasFiles[i], data.post_id);
+                    if (postMediasFiles[i].type.startsWith('video/')) {
+                        await API.uploadVideo(postMediasFiles[i], data.post_id);
+                    } else {
+                        await API.uploadImage(postMediasFiles[i], data.post_id);
+                    }
                 }
             }
             Popup.closePopup('publishPopup');

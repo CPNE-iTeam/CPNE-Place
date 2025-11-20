@@ -10,8 +10,10 @@ class Post
     private int $likes_count;
     private int $dislikes_count;
     private array $images;
+    private array $videos;
 
-    public function __construct(?int $id, string $content, User $author, DateTime $created_at, ?int $father_post_id, int $likes_count, int $dislikes_count, array $images = [])
+
+    public function __construct(?int $id, string $content, User $author, DateTime $created_at, ?int $father_post_id, int $likes_count, int $dislikes_count, array $images = [], array $videos = [])
     {
         $this->id = $id;
 
@@ -25,6 +27,7 @@ class Post
         $this->likes_count = $likes_count;
         $this->dislikes_count = $dislikes_count;
         $this->images = $images;
+        $this->videos = $videos;
     }
 
 
@@ -86,5 +89,9 @@ class Post
     public function getImages(): array
     {
         return $this->images;
+    }
+    public function getVideos(): array
+    {
+        return $this->videos;
     }
 }
