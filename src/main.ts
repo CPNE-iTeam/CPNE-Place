@@ -29,6 +29,10 @@ const newUsernameInput = document.getElementById('newUsernameInput') as HTMLInpu
 const settingsUpdatePasswordForm = document.getElementById('settingsUpdatePasswordForm') as HTMLFormElement;
 const settingsUpdateUsernameForm = document.getElementById('settingsUpdateUsernameForm') as HTMLFormElement;
 const settingsUpdatePictureForm = document.getElementById('settingsUpdatePictureForm') as HTMLFormElement;
+const postMediasInput = document.getElementById('postMedias') as HTMLInputElement;
+const commentMediasInput = document.getElementById('commentMedias') as HTMLInputElement;
+const mediaInputs = [postMediasInput, commentMediasInput];
+const postMediaPreviewContainer = document.getElementById('postMediaPreviewContainer') as HTMLElement;
 
 
 async function loadLoginData() {
@@ -119,6 +123,79 @@ const captchas = [signupAltcha, publishAltcha, commentAltcha, signinAltcha, upda
 for (const captcha of captchas) {
     captcha.challengeurl = Config.API_BASE_URL + '/captcha.php';
 }
+
+for (const mediaInput of mediaInputs) {
+    mediaInput.setAttribute('accept', backendConfig.AllowedImageTypes.join(','));
+    mediaInput.setAttribute('multiple', 'true');
+
+    mediaInput.addEventListener('change', () => {
+        const files = mediaInput.files;
+        if (!files || files.length === 0) return;
+
+        // Vérifie le nombre maximal de fichiers
+        if (files.length > backendConfig.MaxImagesPerPost) {
+            alert(`You can only select a maximum of ${backendConfig.MaxImagesPerPost} files.`);
+            mediaInput.value = '';
+            postMediaPreviewContainer.innerHTML = ''; // Nettoie les aperçus
+            return;
+        }
+
+        // Vérifie la taille de chaque fichier
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].size > backendConfig.MaxImageSize) {
+                alert(`File "${files[i].name}" exceeds the maximum size of ${(backendConfig.MaxImageSize / 1024 / 1024).toFixed(2)} MB.`);
+                mediaInput.value = '';
+                postMediaPreviewContainer.innerHTML = '';
+                return;
+            }
+        }
+
+        // Nettoie les aperçus précédents
+        postMediaPreviewContainer.innerHTML = '';
+
+        // Affiche un aperçu pour chaque image
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            const previewItem = document.createElement('div');
+            previewItem.className = 'image-preview-item';
+
+            const img = document.createElement('img');
+            img.className = 'image-preview';
+            //img.file = file;
+
+            // Utilise FileReader pour lire le fichier et afficher l'aperçu
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.src = e.target!.result!.toString();
+            };
+            reader.readAsDataURL(file);
+
+            // Ajoute un bouton pour supprimer l'image
+            const removeButton = document.createElement('button');
+            removeButton.className = 'remove-image-button';
+            removeButton.innerHTML = '×';
+            removeButton.addEventListener('click', () => {
+                previewItem.remove();
+                // Convertit la FileList en tableau pour manipuler les fichiers
+                const filesArray = Array.from(files);
+                // Retire le fichier correspondant
+                filesArray.splice(i, 1);
+                // Crée une nouvelle FileList (simulée via DataTransfer)
+                const dataTransfer = new DataTransfer();
+                filesArray.forEach(file => dataTransfer.items.add(file));
+                mediaInput.files = dataTransfer.files;
+            });
+
+            // Ajoute l'image et le bouton au conteneur
+            previewItem.appendChild(img);
+            previewItem.appendChild(removeButton);
+            postMediaPreviewContainer.appendChild(previewItem);
+        }
+    });
+}
+
+
 
 
 signinButton.addEventListener('click', () => {
@@ -225,16 +302,16 @@ publishForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const content = (document.getElementById('postContent') as HTMLTextAreaElement).value;
-    const postMedias = (document.getElementById('postMedias') as HTMLInputElement).files;
+    const postMediasFiles = (postMediasInput as HTMLInputElement).files;
     const altchaToken = (publishForm.querySelector('[name=altcha]') as HTMLInputElement).value;
 
     try {
         const data = await API.createPost(content, altchaToken);
         console.info(data);
         try {
-            if (postMedias) {
-                for (let i = 0; i < postMedias.length; i++) {
-                    const file = postMedias[i];
+            if (postMediasFiles) {
+                for (let i = 0; i < postMediasFiles.length; i++) {
+                    const file = postMediasFiles[i];
                     const uploadMessage = await API.uploadImage(file, data.post_id);
                     console.info(uploadMessage);
                 }
@@ -252,7 +329,7 @@ publishForm.addEventListener('submit', async (event) => {
     //alert(message);
     Popup.closePopup('publishPopup');
     (document.getElementById('postContent') as HTMLTextAreaElement).value = '';
-    (document.getElementById('postMedias') as HTMLInputElement).value = '';
+    (postMediasInput as HTMLInputElement).value = '';
 
 
 
@@ -265,7 +342,7 @@ publishForm.addEventListener('submit', async (event) => {
 commentForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const commentMedias = (document.getElementById('commentMedias') as HTMLInputElement).files;
+    const commentMedias = (commentMediasInput as HTMLInputElement).files;
     const content = (document.getElementById('commentContent') as HTMLTextAreaElement).value;
     const fatherPostId = parseInt(commentFatherPostId.value);
     const altchaToken = (commentForm.querySelector('[name=altcha]') as HTMLInputElement).value;

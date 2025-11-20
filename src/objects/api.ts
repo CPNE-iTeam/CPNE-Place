@@ -15,7 +15,10 @@ export class API {
             new RegExp(data.content_pattern.substring(1, data.content_pattern.length - 1)),
             data.max_username_length,
             data.min_username_length,
-            new RegExp(data.username_pattern.substring(1, data.username_pattern.length - 1))
+            new RegExp(data.username_pattern.substring(1, data.username_pattern.length - 1)),
+            data.allowed_image_types,
+            data.max_image_size,
+            data.max_images_per_post
         );
     }
 

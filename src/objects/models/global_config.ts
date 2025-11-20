@@ -7,14 +7,20 @@ export class GlobalConfig {
     private maxUsernameLength: number;
     private minUsernameLength: number;
     private usernamePattern: RegExp;
+    private allowedImageTypes: string[];
+    private maxImageSize: number
+    private maxImagesPerPost: number;
 
-    constructor(maxPostLength: number, minPostLength: number, contentPattern: RegExp, maxUsernameLength: number, minUsernameLength: number, usernamePattern: RegExp) {
+    constructor(maxPostLength: number, minPostLength: number, contentPattern: RegExp, maxUsernameLength: number, minUsernameLength: number, usernamePattern: RegExp, allowedImageTypes: string[], maxImageSize: number, maxImagesPerPost: number) {
         this.maxPostLength = maxPostLength;
         this.minPostLength = minPostLength;
         this.contentPattern = contentPattern;
         this.maxUsernameLength = maxUsernameLength;
         this.minUsernameLength = minUsernameLength;
         this.usernamePattern = usernamePattern;
+        this.allowedImageTypes = allowedImageTypes;
+        this.maxImageSize = maxImageSize;
+        this.maxImagesPerPost = maxImagesPerPost;
     }
 
     get MaxPostLength(): number {
@@ -39,5 +45,17 @@ export class GlobalConfig {
 
     get UsernamePattern(): RegExp {
         return this.usernamePattern;
+    }
+
+    get AllowedImageTypes(): string[] {
+        return this.allowedImageTypes;
+    }
+
+    get MaxImageSize(): number {
+        return this.maxImageSize;
+    }
+
+    get MaxImagesPerPost(): number {
+        return this.maxImagesPerPost;
     }
 }
