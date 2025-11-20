@@ -6,6 +6,8 @@ import { MediaPreviewManager } from './objects/mediaPreviewManager';
 import { AuthManager } from './objects/authManager';
 import { FormManager } from './objects/FormManager';
 
+import "altcha";
+
 document.addEventListener('DOMContentLoaded', async () => {
     const backendConfig = await API.getConfig();
 
@@ -40,7 +42,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         signupForm, signinForm, publishForm, commentForm,
         settingsUpdatePasswordForm, settingsUpdateUsernameForm, settingsUpdatePictureForm,
         postMediaPreviewContainer, postMediasInput, commentMediasInput, backendConfig,
-        postManager
+        postManager,
+        authManager,
+        commentManager
     );
 
     // Chargement initial des données
@@ -62,4 +66,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     for (const captcha of captchas) {
         captcha.challengeurl = Config.API_BASE_URL + '/captcha.php';
     }
+
+    document.addEventListener("loadComments", async (event: any) => {
+        const fatherPostId = event.detail.postId;
+        await commentManager.loadComments(fatherPostId);
+    });
 });

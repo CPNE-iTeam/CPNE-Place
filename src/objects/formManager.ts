@@ -1,4 +1,6 @@
 import { API } from './api';
+import type { AuthManager } from './authManager';
+import type { CommentManager } from './commentManager';
 import { Popup } from './popup';
 import { PostManager } from './postManager';
 
@@ -15,6 +17,8 @@ export class FormManager {
     private commentMediasInput: HTMLInputElement;
     private backendConfig: any;
     private postManager: PostManager;
+    private authManager: AuthManager;
+    private commentManager: CommentManager;
 
     constructor(
         signupForm: HTMLFormElement,
@@ -28,7 +32,9 @@ export class FormManager {
         postMediasInput: HTMLInputElement,
         commentMediasInput: HTMLInputElement,
         backendConfig: any,
-        postManager: PostManager
+        postManager: PostManager,
+        authManager: AuthManager,
+        commentManager: CommentManager
     ) {
         this.signupForm = signupForm;
         this.signinForm = signinForm;
@@ -42,6 +48,8 @@ export class FormManager {
         this.commentMediasInput = commentMediasInput;
         this.backendConfig = backendConfig;
         this.postManager = postManager;
+        this.authManager = authManager;
+        this.commentManager = commentManager;
 
         this.setupFormListeners();
     }
@@ -65,6 +73,7 @@ export class FormManager {
         try {
             const message = await API.registerUser(username, password, altchaToken);
             Popup.closePopup('signupPopup');
+            this.authManager.loadLoginData();
             this.signupForm.reset();
         } catch (error) {
             alert((error as Error).message);
@@ -84,6 +93,7 @@ export class FormManager {
                 Popup.openPopup('bannedPopup');
             } else {
                 Popup.closePopup('signinPopup');
+                this.authManager.loadLoginData();
                 this.signinForm.reset();
             }
         } catch (error) {
@@ -107,6 +117,7 @@ export class FormManager {
             Popup.closePopup('publishPopup');
             this.publishForm.reset();
             this.postMediaPreviewContainer.innerHTML = '';
+            this.postManager.reset();
         } catch (error) {
             alert((error as Error).message);
         }
@@ -116,7 +127,7 @@ export class FormManager {
         event.preventDefault();
         const commentMedias = this.commentMediasInput.files;
         const content = (this.commentForm.querySelector('#commentContent') as HTMLTextAreaElement).value;
-        const fatherPostId = parseInt((this.commentForm.querySelector('#commentFatherPostId') as HTMLInputElement).value);
+        const fatherPostId = parseInt((document.querySelector('#commentFatherPostId') as HTMLInputElement).value);
         const altchaToken = (this.commentForm.querySelector('[name=altcha]') as HTMLInputElement).value;
 
         try {
@@ -127,6 +138,7 @@ export class FormManager {
                 }
             }
             this.commentForm.reset();
+            this.commentManager.loadComments(fatherPostId);
         } catch (error) {
             alert((error as Error).message);
         }

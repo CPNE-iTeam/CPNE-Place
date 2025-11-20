@@ -11,7 +11,8 @@ $response = [
     'username_pattern' => USERNAME_PATTERN,
     'allowed_image_types' => ALLOWED_IMAGE_TYPES,
     'max_image_size' => MAX_IMAGE_SIZE,
-    'max_images_per_post' => MAX_IMAGES_PER_POST,
+    'max_medias_per_post' => MAX_MEDIAS_PER_POST,
+    'allowed_video_types' => ALLOWED_VIDEO_TYPES,
 ];  
 
 echo json_encode($response);

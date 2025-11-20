@@ -9,9 +9,12 @@ export class GlobalConfig {
     private usernamePattern: RegExp;
     private allowedImageTypes: string[];
     private maxImageSize: number
-    private maxImagesPerPost: number;
+    private maxMediasPerPost: number;
+    private allowedVideoTypes: string[];
+    private maxVideoSize: number;
 
-    constructor(maxPostLength: number, minPostLength: number, contentPattern: RegExp, maxUsernameLength: number, minUsernameLength: number, usernamePattern: RegExp, allowedImageTypes: string[], maxImageSize: number, maxImagesPerPost: number) {
+
+    constructor(maxPostLength: number, minPostLength: number, contentPattern: RegExp, maxUsernameLength: number, minUsernameLength: number, usernamePattern: RegExp, allowedImageTypes: string[], maxImageSize: number, maxImagesPerPost: number, allowedVideoTypes: string[], maxVideoSize: number) {
         this.maxPostLength = maxPostLength;
         this.minPostLength = minPostLength;
         this.contentPattern = contentPattern;
@@ -20,7 +23,9 @@ export class GlobalConfig {
         this.usernamePattern = usernamePattern;
         this.allowedImageTypes = allowedImageTypes;
         this.maxImageSize = maxImageSize;
-        this.maxImagesPerPost = maxImagesPerPost;
+        this.maxMediasPerPost = maxImagesPerPost;
+        this.allowedVideoTypes = allowedVideoTypes;
+        this.maxVideoSize = maxVideoSize;
     }
 
     get MaxPostLength(): number {
@@ -55,7 +60,15 @@ export class GlobalConfig {
         return this.maxImageSize;
     }
 
-    get MaxImagesPerPost(): number {
-        return this.maxImagesPerPost;
+    get MaxMediasPerPost(): number {
+        return this.maxMediasPerPost;
+    }
+
+    get AllowedVideoTypes(): string[] {
+        return this.allowedVideoTypes;
+    }
+
+    get MaxVideoSize(): number {
+        return this.maxVideoSize;
     }
 }

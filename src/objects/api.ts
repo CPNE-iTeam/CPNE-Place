@@ -18,7 +18,9 @@ export class API {
             new RegExp(data.username_pattern.substring(1, data.username_pattern.length - 1)),
             data.allowed_image_types,
             data.max_image_size,
-            data.max_images_per_post
+            data.max_medias_per_post,
+            data.allowed_video_types,
+            data.max_video_size
         );
     }
 
