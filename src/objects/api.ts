@@ -188,10 +188,12 @@ export class API {
             postData.content,
             new User(
                 postData.author.id,
-                postData.author.username
+                postData.author.username,
+                postData.author.is_certified,
+                postData.author.profile_image
             ),
             new Date(postData.created_at),
-            fatherPostId,
+            postData.father_post_id,
             postData.likes_count,
             postData.dislikes_count,
             postData.images,
