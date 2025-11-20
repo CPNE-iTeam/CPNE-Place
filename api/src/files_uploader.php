@@ -8,7 +8,6 @@ class FileUploader
     public function __construct(string $uploadDir = UPLOAD_DIR)
     {
         $this->uploadDir = dirname(__FILE__) . "/../../" . rtrim($uploadDir, '/') . '/';
-
         if (!is_dir($this->uploadDir)) {
             if (!mkdir($this->uploadDir, 0755, true)) {
                 throw new Exception("Impossible de créer le répertoire d'upload : " . $this->uploadDir);
@@ -16,11 +15,9 @@ class FileUploader
         }
     }
 
-
     public function uploadImage(array $file, int $newWidth = 800, ?int $newHeight = null, int $quality = 75): string
     {
-
-        if (!isset($file['tmp_name']) || !is_uploaded_file(filename: $file['tmp_name'])) {
+        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
             throw new Exception("Erreur : le fichier n'a pas été uploadé correctement.");
         }
 
@@ -55,10 +52,8 @@ class FileUploader
         }
 
         unlink($destination);
-
         return $compressedDestination;
     }
-
 
     public function resizeAndCompressImage(
         string $source,
@@ -67,67 +62,82 @@ class FileUploader
         ?int $newHeight = null,
         int $quality = 80
     ): bool {
-        $imageInfo = getimagesize($source);
-        if ($imageInfo === false) {
-            return false;
-        }
+        $fileExt = strtolower(pathinfo($source, PATHINFO_EXTENSION));
 
-        list($width, $height, $type) = $imageInfo;
-
-        if ($newHeight === null) {
-            $newHeight = intval(($newWidth / $width) * $height);
-        }
-
-        $newImage = imagecreatetruecolor($newWidth, $newHeight);
-
-        if ($type === IMAGETYPE_PNG) {
-            imagealphablending($newImage, false);
-            imagesavealpha($newImage, true);
-        }
-
-        switch ($type) {
-            case IMAGETYPE_JPEG:
-                $sourceImage = imagecreatefromjpeg($source);
-                break;
-            case IMAGETYPE_PNG:
-                $sourceImage = imagecreatefrompng($source);
-                break;
-            case IMAGETYPE_GIF:
-                $sourceImage = imagecreatefromgif($source);
-                break;
-            default:
+        if ($fileExt === 'gif') {
+            // Use FFmpeg for animated GIFs
+            $height = $newHeight ?? -1;
+            $command = sprintf(
+                'ffmpeg -i %s -vf "scale=%d:%d:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 %s 2>&1',
+                escapeshellarg($source),
+                $newWidth,
+                $height,
+                escapeshellarg($destination)
+            );
+            exec($command, $output, $returnVar);
+            if ($returnVar !== 0) {
+                error_log("FFmpeg error: " . implode("\n", $output));
+            }
+            return $returnVar === 0;
+        } else {
+            $imageInfo = getimagesize($source);
+            if ($imageInfo === false) {
                 return false;
+            }
+
+            list($width, $height, $type) = $imageInfo;
+            if ($newHeight === null) {
+                $newHeight = intval(($newWidth / $width) * $height);
+            }
+
+            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+            if ($type === IMAGETYPE_PNG) {
+                imagealphablending($newImage, false);
+                imagesavealpha($newImage, true);
+            }
+
+            switch ($type) {
+                case IMAGETYPE_JPEG:
+                    $sourceImage = imagecreatefromjpeg($source);
+                    break;
+                case IMAGETYPE_PNG:
+                    $sourceImage = imagecreatefrompng($source);
+                    break;
+                case IMAGETYPE_GIF:
+                    $sourceImage = imagecreatefromgif($source);
+                    break;
+                default:
+                    return false;
+            }
+
+            imagecopyresampled(
+                $newImage, $sourceImage,
+                0, 0, 0, 0,
+                $newWidth, $newHeight,
+                $width, $height
+            );
+
+            switch ($type) {
+                case IMAGETYPE_JPEG:
+                    imagejpeg($newImage, $destination, $quality);
+                    break;
+                case IMAGETYPE_PNG:
+                    imagepng($newImage, $destination, 7);
+                    break;
+                case IMAGETYPE_GIF:
+                    imagegif($newImage, $destination);
+                    break;
+                default:
+                    imagedestroy($newImage);
+                    imagedestroy($sourceImage);
+                    return false;
+            }
+
+            imagedestroy($newImage);
+            imagedestroy($sourceImage);
+            return true;
         }
-
-        imagecopyresampled(
-            $newImage, $sourceImage,
-            0, 0, 0, 0,
-            $newWidth, $newHeight,
-            $width, $height
-        );
-
-        switch ($type) {
-            case IMAGETYPE_JPEG:
-                imagejpeg($newImage, $destination, $quality);
-                break;
-            case IMAGETYPE_PNG:
-                imagepng($newImage, $destination, 7); // Niveau de compression 7
-                break;
-            case IMAGETYPE_GIF:
-                imagegif($newImage, $destination);
-                break;
-            default:
-                imagedestroy($newImage);
-                imagedestroy($sourceImage);
-                return false;
-        }
-
-        imagedestroy($newImage);
-        imagedestroy($sourceImage);
-
-        return true;
     }
-
 
     public function deleteFile(string $filePath): bool
     {
@@ -136,7 +146,6 @@ class FileUploader
         }
         return false;
     }
-
 
     private function codeToMessage(int $code): string
     {
