@@ -44,6 +44,12 @@ if ($post->getAuthor()->getId() !== $user->getId()) {
     exit();
 }
 
+if (count($db->get_images($postid)) >= MAX_IMAGES_PER_POST) {
+    http_response_code(400);
+    echo json_encode(["message" => "Maximum number of images reached for this post."]);
+    exit();
+}
+
 $uploader = new FileUploader();
 
 try {
