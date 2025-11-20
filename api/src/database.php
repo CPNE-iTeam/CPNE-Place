@@ -317,6 +317,16 @@ class Database
     }
 
 
+    public function get_images(int $postID): array
+    {
+        $sql = "SELECT filename FROM images WHERE post_ID = ?";
+        $result = $this->select($sql, [strval($postID)]);
+        $images = [];
+        foreach ($result as $row) {
+            $images[] = rtrim(UPLOAD_DIR, '/') . '/' . $row['filename'];
+        }
+        return $images;
+    }
 
     private function getImagesForPosts(array $postIds): array
     {
