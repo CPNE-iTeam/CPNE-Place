@@ -12,3 +12,6 @@ const UPLOAD_DIR = 'uploads/';
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4 MB
 const MAX_IMAGES_PER_POST = 5;
+
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+const MAX_VIDEO_SIZE = 50 * 1024 * 1024; // 50 Mo

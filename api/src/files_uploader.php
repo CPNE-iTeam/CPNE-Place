@@ -167,4 +167,91 @@ class FileUploader
                 return 'Erreur inconnue lors de l\'upload.';
         }
     }
+
+
+
+
+
+
+    public function uploadVideo(array $file, int $maxDuration = 300): string
+    {
+        if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            throw new Exception("Erreur : le fichier vidéo n'a pas été uploadé correctement.");
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($mime, ALLOWED_VIDEO_TYPES)) {
+            throw new Exception(
+                "Erreur : type de vidéo non autorisé. Types autorisés : " .
+                implode(', ', ALLOWED_VIDEO_TYPES)
+            );
+        }
+
+        if ($file['size'] > MAX_VIDEO_SIZE) {
+            throw new Exception(
+                "Erreur : la taille de la vidéo dépasse la limite maximale de " .
+                (MAX_VIDEO_SIZE / (1024 * 1024)) . " Mo."
+            );
+        }
+
+        $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $newFileName = uniqid("tmp_video_", true) . "." . $fileExt;
+        $destination = $this->uploadDir . $newFileName;
+
+        if (!move_uploaded_file($file['tmp_name'], $destination)) {
+            throw new Exception("Erreur : " . $this->codeToMessage($file['error']));
+        }
+
+        if (!$this->validateAndConvertVideo($destination, $maxDuration)) {
+            $this->deleteFile($destination);
+            throw new Exception("Erreur : la vidéo est invalide ou dépasse la durée maximale autorisée.");
+        }
+
+        $finalFileName = uniqid("video_", true) . ".mp4";
+        $finalDestination = $this->uploadDir . $finalFileName;
+
+        if ($destination !== $finalDestination) {
+            rename($destination, $finalDestination);
+        }
+
+        return $finalDestination;
+    }
+
+    private function validateAndConvertVideo(string $videoPath, int $maxDuration): bool
+    {
+        if (!shell_exec('which ffmpeg')) {
+            throw new Exception("Erreur : FFmpeg n'est pas installé ou n'est pas accessible.");
+        }
+
+        $command = sprintf(
+            'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 %s 2>&1',
+            escapeshellarg($videoPath)
+        );
+        $duration = (float) shell_exec($command);
+
+        if ($duration > $maxDuration) {
+            return false;
+        }
+
+        $outputPath = str_replace('.', '_converted.', $videoPath) . '.mp4';
+        $convertCommand = sprintf(
+            'ffmpeg -i %s -c:v libx264 -crf 23 -preset fast -c:a aac -b:a 128k -movflags +faststart %s 2>&1',
+            escapeshellarg($videoPath),
+            escapeshellarg($outputPath)
+        );
+        exec($convertCommand, $output, $returnVar);
+
+        if ($returnVar !== 0) {
+            error_log("FFmpeg conversion error: " . implode("\n", $output));
+            return false;
+        }
+
+        unlink($videoPath);
+        rename($outputPath, $videoPath);
+
+        return true;
+    }
 }
