@@ -27,3 +27,4 @@ dist-ssr
 *.sw?
 
 vendor
+package-lock.json

@@ -45,9 +45,16 @@ if ($sameNameUser !== null) {
 
 $success = $db->create_user($user);
 
+$userID = $db->getLastInsertId();
+$user = new User(
+    $userID,
+    $username,
+    $passwordHash
+);
+
+
 if ($success) {
     Session::login($user);
-
     http_response_code(201);
     echo json_encode(["message" => "User registered successfully."]);
 } else {
