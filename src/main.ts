@@ -4,7 +4,7 @@ import { PostManager } from './objects/postManager';
 import { CommentManager } from './objects/commentManager';
 import { MediaPreviewManager } from './objects/mediaPreviewManager';
 import { AuthManager } from './objects/authManager';
-import { FormManager } from './objects/FormManager';
+import { FormManager } from './objects/formManager';
 
 import "altcha";
 
