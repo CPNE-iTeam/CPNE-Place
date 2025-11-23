@@ -99,7 +99,7 @@ CREATE TABLE `videos` (
   `ID` int(11) NOT NULL,
   `post_ID` int(11) NOT NULL,
   `filename` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Indexes for dumped tables

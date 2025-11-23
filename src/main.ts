@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const commentsSection = document.getElementById('commentsSection') as HTMLElement;
     const commentFatherPostId = document.getElementById('commentFatherPostId') as HTMLInputElement;
     const postMediaPreviewContainer = document.getElementById('postMediaPreviewContainer') as HTMLElement;
+    const commentMediaPreviewContainer = document.getElementById('commentMediaPreviewContainer') as HTMLElement;
     const postMediasInput = document.getElementById('postMedias') as HTMLInputElement;
     const commentMediasInput = document.getElementById('commentMedias') as HTMLInputElement;
 
@@ -37,6 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const postManager = new PostManager(postsSection);
     const commentManager = new CommentManager(commentsSection, commentFatherPostId);
     new MediaPreviewManager(postMediasInput, postMediaPreviewContainer, backendConfig);
+    new MediaPreviewManager(commentMediasInput, commentMediaPreviewContainer, backendConfig);
     const authManager = new AuthManager(signinButton, signupButton, signoutButton, publishButton, settingsButton);
     new FormManager(
         signupForm, signinForm, publishForm, commentForm,
