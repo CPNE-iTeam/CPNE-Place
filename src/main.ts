@@ -36,12 +36,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialisation des managers
     const postManager = new PostManager(postsSection);
     const commentManager = new CommentManager(commentsSection, commentFatherPostId);
-    const mediaPreviewManager = new MediaPreviewManager(postMediasInput, postMediaPreviewContainer, backendConfig);
+    new MediaPreviewManager(postMediasInput, postMediaPreviewContainer, backendConfig);
     const authManager = new AuthManager(signinButton, signupButton, signoutButton, publishButton, settingsButton);
-    const formManager = new FormManager(
+    new FormManager(
         signupForm, signinForm, publishForm, commentForm,
         settingsUpdatePasswordForm, settingsUpdateUsernameForm, settingsUpdatePictureForm,
-        postMediaPreviewContainer, postMediasInput, commentMediasInput, backendConfig,
+        postMediaPreviewContainer, postMediasInput, commentMediasInput,
         postManager,
         authManager,
         commentManager
@@ -70,5 +70,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener("loadComments", async (event: any) => {
         const fatherPostId = event.detail.postId;
         await commentManager.loadComments(fatherPostId);
+    });
+
+    document.addEventListener("postDeleted", async (event: any) => {
+        postManager.reset();
+        commentManager.loadComments(event.detail.postId);
     });
 });

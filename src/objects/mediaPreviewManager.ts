@@ -92,13 +92,13 @@ export class MediaPreviewManager {
         const removeButton = document.createElement('button');
         removeButton.className = 'remove-image-button';
         removeButton.innerHTML = '×';
-        removeButton.addEventListener('click', () => this.removePreview(index, file));
+        removeButton.addEventListener('click', () => this.removePreview(index));
 
         previewItem.appendChild(removeButton);
         this.previewContainer.appendChild(previewItem);
     }
 
-    private removePreview(index: number, file: File): void {
+    private removePreview(index: number): void {
         const child = this.previewContainer.children[index] as HTMLElement | undefined;
         if (child) {
             child.remove();

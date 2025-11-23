@@ -15,7 +15,6 @@ export class FormManager {
     private postMediaPreviewContainer: HTMLElement;
     private postMediasInput: HTMLInputElement;
     private commentMediasInput: HTMLInputElement;
-    private backendConfig: any;
     private postManager: PostManager;
     private authManager: AuthManager;
     private commentManager: CommentManager;
@@ -31,7 +30,6 @@ export class FormManager {
         postMediaPreviewContainer: HTMLElement,
         postMediasInput: HTMLInputElement,
         commentMediasInput: HTMLInputElement,
-        backendConfig: any,
         postManager: PostManager,
         authManager: AuthManager,
         commentManager: CommentManager
@@ -46,7 +44,6 @@ export class FormManager {
         this.postMediaPreviewContainer = postMediaPreviewContainer;
         this.postMediasInput = postMediasInput;
         this.commentMediasInput = commentMediasInput;
-        this.backendConfig = backendConfig;
         this.postManager = postManager;
         this.authManager = authManager;
         this.commentManager = commentManager;
@@ -72,6 +69,7 @@ export class FormManager {
 
         try {
             const message = await API.registerUser(username, password, altchaToken);
+            console.info(message);
             Popup.closePopup('signupPopup');
             this.authManager.loadLoginData();
             this.signupForm.reset();
